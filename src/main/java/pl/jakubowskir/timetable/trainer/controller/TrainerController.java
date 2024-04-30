@@ -12,12 +12,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @AllArgsConstructor
 public class TrainerController {
 
-    private static final AtomicInteger counter = new AtomicInteger(0);
+    protected static final AtomicInteger counter = new AtomicInteger(0);
 
     private final TrainerRepository trainerRepository;
+    private final TrainerService trainerService;
+
+
 
     @GetMapping("/api/v1/trainer")
     public List<Trainer> getTrainers() {
-        return null;
+        return trainerService.getTrainers();
     }
 }

@@ -1,7 +1,12 @@
 package pl.jakubowskir.timetable.trainer.controller;
 
+import lombok.Getter;
+
 public class TrainerDto {
-    String Name;
-    String Surname;
+    @Getter
+    String name;
+    @Getter
+    String surname;
     Long id;
+
 }
