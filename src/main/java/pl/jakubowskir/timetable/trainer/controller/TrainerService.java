@@ -12,25 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static pl.jakubowskir.timetable.trainer.controller.TrainerController.counter;
 
 @Service
 public class TrainerService {
-    private static final AtomicInteger counter = new AtomicInteger(0);
     private final TrainerRepository trainerRepository;
+    private AtomicInteger counter;
+
     public List<Trainer> getTrainers() {
-            return trainerRepository.findAll();
+        return trainerRepository.findAll();
     }
 
-@Autowired
+    @Autowired
     public TrainerService(TrainerRepository trainerRepository) {
         this.trainerRepository = trainerRepository;
     }
+
     public Trainer addTrainer(TrainerDto trainerDto) {
-    Trainer trainer = new Trainer();
-    trainer.setId((long) counter.getAndIncrement());
-    trainer.setName(trainerDto.getName());
-    trainer.setSurname(trainerDto.getSurname());
+        Trainer trainer = new Trainer();
+        trainer.setId((long) counter.getAndIncrement());
+        trainer.setName(trainerDto.getName());
+        trainer.setSurname(trainerDto.getSurname());
         return trainerRepository.save(trainer);
 
 

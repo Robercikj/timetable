@@ -1,12 +1,9 @@
 package pl.jakubowskir.timetable.trainer.controller;
 
-import lombok.Getter;
+//import lombok.Getter;
 
-public class TrainerDto {
-    @Getter
-    String name;
-    @Getter
-    String surname;
-    Long id;
+record TrainerDto {
+    static String name;
+    static String surname;
 
 }
