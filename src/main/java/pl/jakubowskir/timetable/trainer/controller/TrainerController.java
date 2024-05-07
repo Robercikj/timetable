@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pl.jakubowskir.timetable.trainer.model.Trainer;
 import pl.jakubowskir.timetable.trainer.repository.TrainerRepository;
@@ -17,7 +18,7 @@ public class TrainerController {
 
 
     private final TrainerService trainerService;
-    private TrainerDto trainerDto;
+
 
 
     @GetMapping("/api/v1/trainer")
@@ -26,7 +27,7 @@ public class TrainerController {
     }
 
     @PostMapping("/trainer")
-    public ResponseEntity<String> addTrainer() {
+    public ResponseEntity<String> addTrainer(@RequestBody TrainerDto trainerDto) {
         Trainer addedTrainer = trainerService.addTrainer(trainerDto);
         if (addedTrainer != null) {
             return ResponseEntity.ok("Dodano nowego trenera");

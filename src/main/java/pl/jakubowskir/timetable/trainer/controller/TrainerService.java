@@ -29,14 +29,14 @@ public class TrainerService {
 
     public Trainer addTrainer(TrainerDto trainerDto) {
         Trainer trainer = new Trainer();
-        trainer.setId((long) counter.getAndIncrement());
-        trainer.setName(trainerDto.getName());
-        trainer.setSurname(trainerDto.getSurname());
+        trainer.setName(trainerDto.name());
+        trainer.setSurname(trainerDto.surname());
         return trainerRepository.save(trainer);
 
 
     }
 
 }
+
 
 
