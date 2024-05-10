@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,4 +21,5 @@ public class Trainer {
     private String name;
 
     private String surname;
+    private List<Trainee> trainees;
 }

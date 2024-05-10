@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import pl.jakubowskir.timetable.trainer.model.Trainee;
 import pl.jakubowskir.timetable.trainer.model.Trainer;
 import pl.jakubowskir.timetable.trainer.repository.TrainerRepository;
 
@@ -36,6 +37,8 @@ public class TrainerService {
 
     }
 
+    public void addTraineeToTrainer(Long trainerId, Trainee trainee) {
+    }
 }
 
 

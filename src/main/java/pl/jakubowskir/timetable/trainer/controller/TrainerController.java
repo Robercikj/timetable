@@ -3,17 +3,15 @@ package pl.jakubowskir.timetable.trainer.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.jakubowskir.timetable.trainer.model.Trainee;
 import pl.jakubowskir.timetable.trainer.model.Trainer;
-import pl.jakubowskir.timetable.trainer.repository.TrainerRepository;
 
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/trainers")
 public class TrainerController {
 
 
@@ -35,4 +33,11 @@ public class TrainerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Błąd dodawania trenera");
         }
     }
+    @PostMapping ("/{trainerId}/trainee") // dodawanie podopiecznego do konkretnego trenera po ID
+    public ResponseEntity<String> addTraineeToTrainer(@PathVariable Long trainerId, @RequestBody Trainee trainee) {
+        trainerService.addTraineeToTrainer(trainerId,trainee);
+        return ResponseEntity.ok("Dodanow podopiecznego do trenera o numerze ID: " + trainerId);
+
+    }
+
 }
