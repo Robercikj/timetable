@@ -7,14 +7,17 @@ public class Trainee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "(VARCHAR(250)")
+    @Column
     private String name;
-    @Column(columnDefinition = "(VARCHAR(250)")
+    @Column
     private String surname;
-    @Column(columnDefinition = "(VARCHAR(250)")
+    @Column
     private String email;
     @Column
     private int age;
     @Column
-    private int phoneNumber;
+    private String phoneNumber;
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private Trainer trainer;
 }

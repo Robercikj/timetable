@@ -21,5 +21,6 @@ public class Trainer {
     private String name;
 
     private String surname;
+    @OneToMany(mappedBy = "trainer")
     private List<Trainee> trainees;
 }
