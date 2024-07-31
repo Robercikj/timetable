@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Scanner;
 @RestController
-@RequestMapping("/api/Calendar")
+@RequestMapping("/api/v1/Calendar")
 public class CalendarController {
     private final CalendarService calendarService;
     @Autowired
