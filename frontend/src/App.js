@@ -1,9 +1,90 @@
-import React, { useState } from 'react';  // Dodano import useState
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Switch, Link, useHistory } from 'react-router-dom';
 import { Button } from '@mui/material';
 import './App.css';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import background from './background.jpg';
+import { loginUser, registerUser } from './api'; // Importujemy funkcje z pliku api.js
+
+function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const history = useHistory();
+
+  const handleLogin = async () => {
+    try {
+      const response = await loginUser({ email, password });
+      localStorage.setItem('token', response.data.token);
+      history.push('/'); // Przekieruj na stronę główną po zalogowaniu
+    } catch (error) {
+      console.error('Błąd logowania:', error);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={handleLogin}>Zaloguj się</button>
+    </div>
+  );
+}
+
+function Register() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const history = useHistory();
+
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      alert('Hasła nie są zgodne!');
+      return;
+    }
+    try {
+      await registerUser({ email, password });
+      history.push('/login'); // Przekieruj na stronę logowania po rejestracji
+    } catch (error) {
+      console.error('Błąd rejestracji:', error);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Rejestracja</h2>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+      <button onClick={handleRegister}>Zarejestruj się</button>
+    </div>
+  );
+}
 
 function App() {
   const [trainers, setTrainers] = useState([]);
@@ -109,6 +190,7 @@ function App() {
           </ul>
         </header>
 
+        {/* Dialogi do dodawania trenerów i podopiecznych */}
         <Dialog open={isTrainerModalOpen} onClose={handleCloseTrainerModal}>
           <DialogTitle>Podaj imię trenera</DialogTitle>
           <DialogContent>
@@ -157,6 +239,13 @@ function App() {
           </DialogActions>
         </Dialog>
       </div>
+
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        {/* Dodaj inne trasy, jeśli masz */}
+        <Route path="/" component={App} />
+      </Switch>
     </Router>
   );
 }
