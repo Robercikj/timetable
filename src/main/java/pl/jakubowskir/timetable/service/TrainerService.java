@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.model.TrainerDto;
+import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
 
@@ -17,9 +18,24 @@ import java.util.Optional;
 public class      TrainerService {
     private final TrainerRepository trainerRepository;
     private final TraineeRepository traineeRepository;
-
     public List<Trainer> getTrainers() {
         return trainerRepository.findAll();
+    }
+
+    public List<TrainerTraineeAssignment> getAssignments(){
+        List<TrainerTraineeAssignment> assignments = new ArrayList<>();
+        for (Trainer trainer : trainerRepository.findAll()){
+            for(Trainee trainee : trainer.getTraineeList()){
+                assignments.add(new TrainerTraineeAssignment(
+                        trainer.getId(),
+                        trainer.getName(),
+                        trainee.getId(),
+                        trainee.getName()
+
+                ));
+            }
+        }
+                return assignments;
     }
 
     @Autowired

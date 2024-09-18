@@ -20,7 +20,7 @@ public class TraineeController {
 
 
 
-    @GetMapping
+    @GetMapping("/trainees")
     public List<Trainee> getTrainee() {
         return traineeService.getTrainee();
     }
@@ -32,7 +32,7 @@ public class TraineeController {
         return traineeService.getTrainerByTraineeId(traineeId);
     }
 
-    @PostMapping
+    @PostMapping("/add_trainees")
     public Trainee addTrainee(@RequestBody TraineeDto traineeDto) {
         return traineeService.addTrainee(traineeDto);
     }

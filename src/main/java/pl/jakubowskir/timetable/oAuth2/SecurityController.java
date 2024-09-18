@@ -1,22 +1,23 @@
 package pl.jakubowskir.timetable.oAuth2;
 
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/timetable")
+@CrossOrigin(origins = "http://localhost:3000")
+@Slf4j
 public class SecurityController {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
-
-    public SecurityController(UserService userService, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public SecurityController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     // endpoint rejestracja
@@ -25,13 +26,19 @@ public class SecurityController {
         if (userService.existsByNickname(userDto.getNickname())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Użytkownik o takim loginie już istnieje");
         }
-        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        log.info(userDto.getNickname());
+        log.info(userDto.getPassword());
         userService.saveUser(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Użytkownik został zarejestrowany");
     }
     @PostMapping("/login")
-    public ResponseEntity<String> login() {
-        return ResponseEntity.ok("Zalogowano pomyślnie");
+    public ResponseEntity<String> login(@RequestBody UserDto userDto) {
+        try {
+            String username = userService.login(userDto); // Tak sie nie robi, to jest na chwile
+            return ResponseEntity.ok(username);
+        } catch (RuntimeException exception){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+        }
     }
 }
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.model.TrainerDto;
+import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
 import pl.jakubowskir.timetable.service.TrainerService;
 
 import java.util.List;
@@ -14,12 +15,16 @@ import java.util.List;
 public class TrainerController {
     private TrainerService trainerService;
 
-    @GetMapping
+    @GetMapping("/assignments")
+    public List<TrainerTraineeAssignment> getAssignments() {
+        return trainerService.getAssignments();
+    }
+    @GetMapping("/trainers")
     public List<Trainer> getTrainers() {
         return trainerService.getTrainers();
     }
 
-    @PostMapping
+    @PostMapping("/add_trainer")
     public Trainer addTrainer(@RequestBody TrainerDto trainerDto) {
         return trainerService.addTrainer(trainerDto);
     }
