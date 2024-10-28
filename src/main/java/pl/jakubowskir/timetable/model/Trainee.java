@@ -21,7 +21,6 @@ public class Trainee {
     @Getter
     @ManyToOne
     @JoinColumn(name = "trainer_id")
-    @JsonIgnore
     private Trainer trainer;
 
 }

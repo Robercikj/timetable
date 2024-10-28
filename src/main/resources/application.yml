@@ -1,4 +1,9 @@
- spring:
+security:
+  jwt:
+    secret-key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+    expiration-time: 3600000
+
+spring:
   datasource:
     url: jdbc:h2:mem:mydb
     driverClassName: org.h2.Driver
@@ -22,7 +27,7 @@
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             provider: google
- server:
-   error:
-     whitelabel:
-       enabled: false
+  server:
+    error:
+      whitelabel:
+        enabled: false

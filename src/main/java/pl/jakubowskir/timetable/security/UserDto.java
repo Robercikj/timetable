@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.oAuth2;
+package pl.jakubowskir.timetable.security;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,6 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UserDto {
-    private String nickname;
+    private String username;
     private String password;
 }

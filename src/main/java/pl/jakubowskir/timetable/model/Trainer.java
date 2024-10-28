@@ -1,5 +1,6 @@
 package pl.jakubowskir.timetable.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Trainer {
     private int phoneNumber;
     private String email;
     @OneToMany(mappedBy = "trainer")
+    @JsonIgnore
     private List<Trainee> traineeList;
 
     // TODO: Dodaj email i numer telefonu
