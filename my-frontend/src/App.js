@@ -19,7 +19,26 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [activeTab, setActiveTab] = useState('home'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [trainerId, setTrainerId] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [maxCapacity, setMaxCapacity] = useState("");
+  const [message, setMessage] = useState("");
+  const [successAddTrainerMessage, setSuccessAddTrainerMessage] = useState("");
+  const [errorAddTrainerMessage, setErrorAddTrainerMessage] = useState("");
+  const [successCreateLessonMessage, setSuccessCreateLessonMessage] = useState("");
+  const [errorCreateLessonMessage, setErrorCreateLessonMessage] = useState("");
+  const [successAddTraineeMessage, setSuccessAddTraineeMessage] = useState("");
+  const [errorAddTraineeMessage, setErrorAddTraineeMessage] = useState("");
+  const [successRegistrationMessage, setSuccessRegistrationMessage] = useState('');
+  const [errorRegistrationMessage, setErrorRegistrationMessage] = useState('');
+  const [lessons, setLessons] = useState([]);
+  const [messageLesson, setMessageLesson] = useState("");
+  const [selectedLessonId, setSelectedLessonId] = useState('');
+  const [selectedTraineeId, setSelectedTraineeId] = useState('');
 
+ 
+  
   const handleLogin = async () => {
     
     try {
@@ -27,9 +46,8 @@ const App = () => {
         setErrorMessage('Nickname i hasło są wymagane.');
         setSuccessMessage('');
         return;
-        setIsLoggedIn(true);
       }
-
+      
       const response = await axios.post('http://localhost:8080/api/v1/timetable/login', {
         username: nickname,
         password: password,
@@ -41,6 +59,8 @@ const App = () => {
       localStorage.setItem('username', userData.username);
       setSuccessMessage(`Witaj ${userData.username}! Logowanie udane.`);
       setErrorMessage('');
+
+      setIsLoggedIn(true);
       
       setActiveTab('home');
       fetchTrainers();
@@ -56,14 +76,15 @@ const App = () => {
       }
       setSuccessMessage('');
     }
+    
   };
 
   // Funkcja obsługująca rejestrację
   const handleRegister = async () => {
     try {
       if (!nickname || !password) {
-        setErrorMessage('Nickname i hasło są wymagane.');
-        setSuccessMessage('');
+        setErrorRegistrationMessage('Nickname i hasło są wymagane.');
+        setSuccessRegistrationMessage('');
         return;
       }
 
@@ -72,30 +93,33 @@ const App = () => {
         password: password,
       });
 
-      setSuccessMessage('Rejestracja udana! Możesz się teraz zalogować.');
-      setErrorMessage('');
+      setSuccessRegistrationMessage('Rejestracja udana! Możesz się teraz zalogować.');
+      setErrorRegistrationMessage('');
 
     } catch (error) {
       if (error.response) {
-        setErrorMessage(`Błąd rejestracji: ${error.response.data.message || 'Spróbuj ponownie.'}`);
+        setErrorRegistrationMessage(`Błąd rejestracji: ${error.response.data.message || 'Spróbuj ponownie.'}`);
       } else if (error.request) {
-        setErrorMessage('Brak odpowiedzi od serwera.');
+        setErrorRegistrationMessage('Brak odpowiedzi od serwera.');
       } else {
-        setErrorMessage(`Błąd: ${error.message}`);
+        setErrorRegistrationMessage(`Błąd: ${error.message}`);
       }
-      setSuccessMessage('');
+      setSuccessRegistrationMessage('');
     }
   };
+  
 
   // Funkcja obsługująca dodanie trenera
   const handleAddTrainer = async () => {
+  
     try {
       if (!trainerName) {
-        setErrorMessage('Nazwa trenera jest wymagana.');
-        setSuccessMessage('');
+        setErrorAddTrainerMessage('Nazwa trenera jest wymagana.');
+        setSuccessAddTrainerMessage('');
         return;
       }
       const token = localStorage.getItem('jwt-token');
+      console.log("Token:", token);
       const response = await axios.post('http://localhost:8080/api/v1/trainer/add_trainer', {
         name: trainerName,
       },
@@ -103,21 +127,22 @@ const App = () => {
                   { 'Authorization': token }
              }
       );
-
-      setSuccessMessage('Trener dodany pomyślnie.');
-      setErrorMessage('');
+      
+      setSuccessAddTrainerMessage('Trener dodany pomyślnie.');
+      setErrorAddTrainerMessage('');
       setTrainerName('');
-      fetchTrainers(); // Odśwież listę trenerów
+      fetchTrainers(); 
 
     } catch (error) {
+      
       if (error.response) {
-        setErrorMessage(`Błąd dodawania trenera: ${error.response.data.message || 'Spróbuj ponownie.'}`);
+        setErrorAddTrainerMessage(`Błąd dodawania trenera: ${error.response.data.message || 'Spróbuj ponownie.'}`);
       } else if (error.request) {
-        setErrorMessage('Brak odpowiedzi od serwera.');
+        setErrorAddTrainerMessage('Brak odpowiedzi od serwera.');
       } else {
-        setErrorMessage(`Błąd: ${error.message}`);
+        setErrorAddTrainerMessage(`Błąd: ${error.message}`);
       }
-      setSuccessMessage('');
+      setSuccessAddTrainerMessage('');
     }
   };
 
@@ -125,8 +150,8 @@ const App = () => {
   const handleAddTrainee = async () => {
     try {
       if (!traineeName) {
-        setErrorMessage('Nazwa podopiecznego jest wymagana.');
-        setSuccessMessage('');
+        setErrorAddTraineeMessage('Nazwa podopiecznego jest wymagana.');
+        setSuccessAddTraineeMessage('');
         return;
       }
       const token = localStorage.getItem('jwt-token');
@@ -139,20 +164,20 @@ const App = () => {
              }
       );
 
-      setSuccessMessage('Podopieczny dodany pomyślnie.');
-      setErrorMessage('');
+      setSuccessAddTraineeMessage('Podopieczny dodany pomyślnie.');
+      setErrorAddTraineeMessage('');
       setTraineeName('');
-      fetchTrainees(); // Odśwież listę podopiecznych
+      fetchTrainees(); 
 
     } catch (error) {
       if (error.response) {
-        setErrorMessage(`Błąd dodawania podopiecznego: ${error.response.data.message || 'Spróbuj ponownie.'}`);
+        setErrorAddTraineeMessage(`Błąd dodawania podopiecznego: ${error.response.data.message || 'Spróbuj ponownie.'}`);
       } else if (error.request) {
-        setErrorMessage('Brak odpowiedzi od serwera.');
+        setErrorAddTraineeMessage('Brak odpowiedzi od serwera.');
       } else {
-        setErrorMessage(`Błąd: ${error.message}`);
+        setErrorAddTraineeMessage(`Błąd: ${error.message}`);
       }
-      setSuccessMessage('');
+      setSuccessAddTraineeMessage('');
     }
   };
 
@@ -165,7 +190,7 @@ const App = () => {
         return;
       }
 
-      console.log('Przypisywanie:', selectedTrainer, selectedTrainee); // Debug log
+      console.log('Przypisywanie:', selectedTrainer, selectedTrainee); 
       const token = localStorage.getItem('jwt-token');
 
       const response = await axios.put(`http://localhost:8080/api/v1/trainer/${selectedTrainer}/add_trainee/${selectedTrainee}`,
@@ -179,8 +204,8 @@ const App = () => {
       setErrorMessage('');
       setSelectedTrainer('');
       setSelectedTrainee('');
-      fetchTrainees(); // Odśwież listę podopiecznych
-      fetchTrainers(); // Odśwież listę trenerów
+      fetchTrainees(); 
+      fetchTrainers(); 
 
     } catch (error) {
       if (error.response) {
@@ -205,7 +230,7 @@ const App = () => {
             { 'Authorization': token }
        }
       );
-      console.log('Trenerzy:', response.data); // Debug log
+      console.log('Trenerzy:', response.data);
       if (response.data) {
         setTrainers(response.data);
       }
@@ -223,7 +248,7 @@ const App = () => {
             { 'Authorization': token }
        }
       );
-      console.log('Podopieczni:', response.data); // Debug log
+      console.log('Podopieczni:', response.data); 
       if (response.data) {
         setTrainees(response.data);
       }
@@ -240,7 +265,7 @@ const App = () => {
     }
     const renderHomeTiles = () => (
       <div className="tile">
-    <div className="tile" onClick={() => setActiveTab('home')}>
+    <div className="tile" onClick={() => setCurrentPage('home')}>
       <h3>Strona główna</h3>
     </div>
     <div className="tile" onClick={() => setActiveTab('trainers')}>
@@ -251,59 +276,7 @@ const App = () => {
     </div>
   </div>
 );
-     // Funkcja do renderowania treści w zależności od zakładki
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'home':
-      return (
-        <div>
-          <h2>Witaj, {user}!</h2>
-          <p>To jest strona główna.</p>
-          {renderHomeTiles()}
-        </div>
-      );
-    case 'trainers' :
-      return (
-        <div>
-          <h2>Trenerzy</h2>
-          {/* Formularz dodawania trenera */}
-          <div>
-            <input
-              type="text"
-              placeholder="Nazwa trenera"
-              value={trainerName}
-              onChange={(e) => setTrainerName(e.target.value)}
-            />
-            <button onClick={handleAddTrainer}>Dodaj Trenera</button>
-          </div>
-          {/* Wyświetlanie trenerów */}
-          {renderTrainersAndTraineesTable()}
-        </div>
-      );    
-    case 'trainees' :
-      return (
-        <div>
-          <h2>Podopieczni</h2>
-          {/* Formularz dodawania podopiecznego */}
-          <div>
-            <input
-              type="text"
-              placeholder="Nazwa podopiecznego"
-              value={traineeName}
-              onChange={(e) => setTraineeName(e.target.value)}
-            />
-            <button onClick={handleAddTrainee}>Dodaj Podopiecznego</button>
-          </div>
-          {/* Wyświetlanie podopiecznych */}
-          {renderTrainersAndTraineesTable()}
-        </div>
-        
-      );  
-default:
-    return null;
-    }
-  };
-
+  
   // Pobierz dane o trenerach i podopiecznych po zalogowaniu
   useEffect(() => {
     if (user) {
@@ -323,45 +296,135 @@ default:
       </div>
     );
 
+// Definicja funkcji fetchLessons
+const fetchLessons = async () => {
+  try {
+    const token = localStorage.getItem('jwt-token');
+    if (!token) {
+      setMessageLesson("Brak tokenu autoryzacji. Zaloguj się ponownie.");
+      return;
+    }
+
+    const response = await axios.get("http://localhost:8080/api/v1/lesson", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    setLessons(response.data);
+    setMessageLesson("Lista lekcji została załadowana.");
+  } catch (error) {
+    setMessageLesson("Wystąpił błąd podczas pobierania lekcji.");
+    console.error(error);
+  }
+};
+
+// Hook useEffect do pobierania lekcji przy pierwszym renderowaniu
+useEffect(() => {
+  fetchLessons();
+}, []);
+
+// Funkcja do tworzenia lekcji
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!trainerId || !startTime || !endTime || isNaN(maxCapacity) || maxCapacity <= 0) {
+    setMessage('Wszystkie pola muszą być wypełnione. Sprawdź, czy podano prawidłowego trenera, czas rozpoczęcia, czas zakończenia oraz maksymalną pojemność.');
+    return;
+  }
+
+  const lessonData = {
+    trainerId: trainerId,
+    startTime: startTime,
+    endTime: endTime,
+    maxCapacity: parseInt(maxCapacity),
+  };
+
+  if (new Date(startTime) >= new Date(endTime)) {
+    setMessage('Czas zakończenia musi być późniejszy niż czas rozpoczęcia.');
+    return;
+  }
+
+  const token = localStorage.getItem('jwt-token');
+  if (!token) {
+    setMessage("Brak tokenu autoryzacji. Zaloguj się ponownie.");
+    return;
+  }
+
+  try {
+    const response = await axios.post("http://localhost:8080/api/v1/lesson", lessonData, {
+      headers: {
+        'Authorization': `Bearer ${token}`, 
+      },
+    });
+
+    setMessage("Lekcja została pomyślnie utworzona!");
+    fetchLessons(); // Odśwież listę lekcji po utworzeniu nowej
+    console.log(response.data);
+  } catch (error) {
+    if (error.response && error.response.data) {
+      setMessage(`Błąd: ${error.response.data.message || 'Spróbuj ponownie.'}`);
+    } else {
+      setMessage("Wystąpił błąd podczas tworzenia lekcji.");
+    }
+    console.error(error);
+  }
+};
+const assignTraineeToLesson = async () => {
+  try {
+      const response = await axios.put(`/api/v1/lessons/${selectedLessonId}/assignTrainee/${selectedTraineeId}`);
+      if (response.status === 200) {
+          setMessage(`Podopieczny został przypisany do lekcji.`);
+          // Możesz odświeżyć listę zajęć tutaj, jeśli to konieczne
+      }
+  } catch (error) {
+      console.error('Błąd podczas przypisywania podopiecznego do lekcji:', error);
+      setMessage(`Nie udało się przypisać podopiecznego do lekcji: ${error.response.data.message}`);
+  }
+};
+
+  
+  
 
 
-  // Funkcja do renderowania tabeli trenerów i podopiecznych
-  const renderTrainersAndTraineesTable = () => (
-    <div>
-      <h2>Trenerzy i Podopieczni</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>ID Podopiecznego</th>
-            <th>Nazwa Podopiecznego</th>
-            <th>ID Trenera</th>
-            <th>Nazwa Trenera</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trainees.map((trainee) => {
-            // Znajdź trenera przypisanego do danego podopiecznego
-            return (
-              <tr key={trainee.id}>
-                <td>{trainee.id}</td>
-                <td>{trainee.name}</td>
-                <td>{trainee.trainer ? trainee.trainer.id : 'Brak'}</td>
-                <td>{trainee.trainer ? trainee.trainer.name : 'Brak' }</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
+
+
+// Funkcja do renderowania tabeli trenerów i podopiecznych
+const renderTrainersAndTraineesTable = () => (
+  <div className="table-container">
+    <h2>Trenerzy i Podopieczni</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID Podopiecznego</th>
+          <th>Nazwa Podopiecznego</th>
+          <th>ID Trenera</th>
+          <th>Nazwa Trenera</th>
+        </tr>
+      </thead>
+      <tbody>
+        {trainees.map((trainee) => {
+          // Znajdź trenera przypisanego do danego podopiecznego
+          return (
+            <tr key={trainee.id}>
+              <td>{trainee.id}</td>
+              <td>{trainee.name}</td>
+              <td>{trainee.trainer ? trainee.trainer.id : 'Brak'}</td>
+              <td>{trainee.trainer ? trainee.trainer.name : 'Brak' }</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+);
+
 
   return (
-    <div className="App">
+  <div className="App">
       {localStorage.getItem('jwt-token') ? (
         <div>
-      
-    
-      <div className="tiles-container">
+       <div className="tiles-container">
   <Card className='tile' onClick={() => setCurrentPage('home')}>
     <CardContent>
       <Typography variant="h6" component="div">
@@ -390,74 +453,227 @@ default:
 
 </div>
 
+
         
   
-          {/* Renderowanie treści w zależności od wybranej strony */}
-          {currentPage === 'home' && (
-         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', textAlign: 'center' }}>
-         <Typography variant="h5" component="div" style={{ fontWeight: 'normal' }}>
-           Wybierz opcję w menu, aby zarządzać trenerami lub podopiecznymi
-         </Typography>
+{/* Renderowanie treści w zależności od wybranej strony */}
+
+{currentPage === 'home' && (
+  <div className="flex-container">
+    <div className="form-container">
+      <h2 className="form-header">Przypisz Podopiecznego do Lekcji</h2>
+      <form onSubmit={(e) => { e.preventDefault(); assignTraineeToLesson(); }} style={{ textAlign: "left" }}>
+        <div>
+          <label>ID Lekcji: </label>
+          <input
+            type="text"
+            value={selectedLessonId}
+            onChange={(e) => setSelectedLessonId(e.target.value)}
+            required
+            className="select-input"
+          />
         </div>
-      
-          )}
+        <div>
+          <label>ID Podopiecznego: </label>
+          <input
+            type="text"
+            value={selectedTraineeId}
+            onChange={(e) => setSelectedTraineeId(e.target.value)}
+            required
+            className="select-input"
+          />
+        </div>
+        <button type="submit" className="button">
+          Przypisz Podopiecznego
+        </button>
+      </form>
+      {message && <p className="message">{message}</p>}
+    </div>
 
-
-   {/* Formularz dodawania trenera */}
-
-          {/* Formularz dodawania trenera */}
-{currentPage === 'trainers' && (
-  <div className="form-container">
-    <input
-      type="text"
-      placeholder="Nazwa trenera"
-      value={trainerName}
-      onChange={(e) => setTrainerName(e.target.value)}
-    />
-    <button onClick={handleAddTrainer}>Dodaj Trenera</button>
+    <div className="list-container">
+      <h2>Lista Zajęć</h2>
+      {messageLesson && <p>{messageLesson}</p>}
+      {lessons.length > 0 ? (
+        <ul>
+          {lessons.map((lesson) => (
+            <li key={lesson.id}>
+              Trener ID: {lesson.trainerId}, Start: {lesson.startTime}, Koniec: {lesson.endTime}, Pojemność: {lesson.maxCapacity}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Brak zajęć do wyświetlenia.</p>
+      )}
+    </div>
   </div>
 )}
 
-{currentPage === 'trainees' && (
-  <div className="form-container">
-    {/* Formularz dodawania podopiecznego */}
-    <input
-      type="text"
-      placeholder="Nazwa podopiecznego"
-      value={traineeName}
-      onChange={(e) => setTraineeName(e.target.value)}
-    />
-    <button onClick={handleAddTrainee}>Dodaj Podopiecznego</button>
 
-    {/* Formularz przypisywania podopiecznego do trenera */}
-    <select value={selectedTrainer} onChange={(e) => setSelectedTrainer(e.target.value)}>
-      <option value="">Wybierz trenera</option>
-      {trainers.map((trainer) => (
-        <option key={trainer.id} value={trainer.id}>
-          {trainer.name}
-        </option>
-      ))}
-    </select>
+          
+          
+          
+          
 
-    <select value={selectedTrainee} onChange={(e) => setSelectedTrainee(e.target.value)}>
-      <option value="">Wybierz podopiecznego</option>
-      {trainees.map((trainee) => (
-        <option key={trainee.id} value={trainee.id}>
-          {trainee.name}
-        </option>
-      ))}
-    </select>
-
-    <button onClick={handleAssignTraineeToTrainer}>Przypisz podopiecznego do trenera</button>
-
-    {/* Wyświetlanie tabeli trenerów i podopiecznych */}
-    {renderTrainersAndTraineesTable()}
-  </div>
-)}
 
   
-          
+
+
+{currentPage === 'trainers' && (
+  <div className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
+    
+    {/* Formularz dodawania trenera */}
+    <div className="form-container" style={{ width: "300px", marginBottom: "20px" }}>
+      <h2 className="form-header" style={{ textAlign: "center" }}>Dodaj Trenera</h2>
+      <input
+        type="text"
+        placeholder="Nazwa trenera"
+        value={trainerName}
+        onChange={(e) => setTrainerName(e.target.value)}
+        className="select-input"
+        style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+      />
+      <button onClick={handleAddTrainer} className={`button button-add-trainer`} style={{ width: "100%", padding: "10px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+        Dodaj Trenera
+      </button>
+      {successAddTrainerMessage && <p className="message" style={{ color: "green", textAlign: "center" }}>{successAddTrainerMessage}</p>}
+      {errorAddTrainerMessage && <p className="message" style={{ color: "red", textAlign: "center" }}>{errorAddTrainerMessage}</p>}
+    </div>
+
+    {/* Formularz tworzenia lekcji */}
+    <div className="form-container" style={{ width: "300px", marginBottom: "20px" }}>
+      <h2 className="form-header" style={{ textAlign: "center" }}>Utwórz Lekcję</h2>
+      <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
+        <div>
+          <label>ID Trenera: </label>
+          <input
+            type="text"
+            value={trainerId}
+            onChange={(e) => setTrainerId(e.target.value)}
+            required
+            className="select-input"
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
         </div>
+        <div>
+          <label>Godzina rozpoczęcia: </label>
+          <input
+            type="datetime-local"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            required
+            className="select-input"
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+        </div>
+        <div>
+          <label>Godzina zakończenia: </label>
+          <input
+            type="datetime-local"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            required
+            className="select-input"
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+        </div>
+        <div>
+          <label>Maksymalna liczba uczestników: </label>
+          <input
+            type="number"
+            value={maxCapacity}
+            onChange={(e) => setMaxCapacity(e.target.value)}
+            required
+            className="select-input"
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+        </div>
+        <button type="submit" className={`button button-create-lesson`} style={{ width: "100%", padding: "10px", backgroundColor: "#2196F3", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+          Utwórz Lekcję
+        </button>
+      </form>
+      {message && <p className="message">{message}</p>}
+    </div>
+  </div>
+)}
+
+
+{currentPage === 'trainees' && (
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px", backgroundColor: "#f9f9f9" }}>
+    
+    {/* Formularz dodawania podopiecznego */}
+    <div className="form-container" style={{ width: "300px", padding: "20px", border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#fff", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", marginBottom: "20px" }}>
+      <h2 style={{ textAlign: "center" }}>Dodaj Podopiecznego</h2>
+      <input
+        type="text"
+        placeholder="Nazwa podopiecznego"
+        value={traineeName}
+        onChange={(e) => setTraineeName(e.target.value)}
+        style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+      />
+      <button onClick={handleAddTrainee} style={{ width: "100%", padding: "10px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+        Dodaj Podopiecznego
+      </button>
+      {successAddTraineeMessage && <p className="message" style={{ color: "green", textAlign: "center" }}>{successAddTraineeMessage}</p>}
+      {errorAddTraineeMessage && <p className="message" style={{ color: "red", textAlign: "center" }}>{errorAddTraineeMessage}</p>}
+    </div>
+
+    {/* Formularz przypisywania podopiecznego do trenera */}
+    <div className="form-container" style={{ width: "300px", padding: "20px", border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#fff", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", marginBottom: "20px" }}>
+      <h2 style={{ textAlign: "center" }}>Przypisz Podopiecznego do Trenera</h2>
+      <select value={selectedTrainer} onChange={(e) => setSelectedTrainer(e.target.value)} style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
+        <option value="">Wybierz trenera</option>
+        {trainers.map((trainer) => (
+          <option key={trainer.id} value={trainer.id}>
+            {trainer.name}
+          </option>
+        ))}
+      </select>
+
+      <select value={selectedTrainee} onChange={(e) => setSelectedTrainee(e.target.value)} style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
+        <option value="">Wybierz podopiecznego</option>
+        {trainees.map((trainee) => (
+          <option key={trainee.id} value={trainee.id}>
+            {trainee.name}
+          </option>
+        ))}
+      </select>
+
+      <button onClick={handleAssignTraineeToTrainer} style={{ width: "100%", padding: "10px", backgroundColor: "#2196F3", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+        Przypisz podopiecznego do trenera
+      </button>
+      {successMessage && <p className="message" style={{ color: "green", textAlign: "center" }}>{successMessage}</p>}
+      {errorMessage && <p className="message" style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>}
+    </div>
+
+    {/* Wyświetlanie tabeli trenerów i podopiecznych */}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" }}>
+      <h2 style={{ textAlign: "center" }}>Tabela Trenerów i Podopiecznych</h2>
+      <div style={{ overflowX: "auto", width: "100%", maxWidth: "600px" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>ID Podopiecznego</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>Nazwa Podopiecznego</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>ID Trenera</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>Nazwa Trenera</th>
+            </tr>
+          </thead>
+          <tbody>
+            {trainees.map((trainee) => (
+              <tr key={trainee.id}>
+                <td style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>{trainee.id}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>{trainee.name}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>{trainee.trainer ? trainee.trainer.id : 'Brak'}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px", textAlign: "center" }}>{trainee.trainer ? trainee.trainer.name : 'Brak' }</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
+  </div>
       ) : (
         // Logowanie/Rejestracja, gdy użytkownik nie jest zalogowany
         <div>

@@ -11,36 +11,163 @@
 
 .tile {
   cursor: pointer;
-  background: #007bff; /* Kolor tła kafelka - niebieski */
-  color: white; /* Kolor tekstu */
-  border-radius: 5px; /* Zaokrąglone rogi */
-  padding: 10px; /* Dostosowane do większych kafelków */
-  margin: 10px; /* Odstęp między kafelkami */
-  text-align: center; /* Wyśrodkowanie tekstu */
-  transition: transform 0.2s; /* Efekt przejścia */
-  display: inline-flex; /* Użycie inline-flex, aby kafelki były obok siebie */
-  justify-content: center; /* Wyśrodkowanie w poziomie */
-  align-items: center; /* Wyśrodkowanie w pionie */
-  font-size: calc(0.8rem + 0.5vw); /* Responsywna wielkość czcionki */
-  border: none; /* Bez obramowania */
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Cień dla kafelków */
+  background: #007bff; 
+  color: white; 
+  border-radius: 5px; 
+  padding: 10px; 
+  margin: 10px; 
+  text-align: center; 
+  transition: transform 0.2s; 
+  display: inline-flex; 
+  justify-content: center; 
+  align-items: center; 
+  font-size: calc(0.8rem + 0.5vw); 
+  border: none;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); 
 }
 
 .logout-button {
-  cursor: pointer; /* Kursor wskazujący */
-  background-color: #007bff; /* Kolor tła przycisku - niebieski */
-  color: white; /* Kolor tekstu */
-  border-radius: 5px; /* Zaokrąglone rogi */
-  padding: 10px; /* Wewnętrzny odstęp */
+  cursor: pointer; 
+  background-color: #007bff; 
+  color: white; 
+  border-radius: 5px; 
+  padding: 10px; 
   height: 50px;
-  border: none; /* Bez obramowania */
+  border: none; 
   
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Cień */
-  position: absolute; /* Umożliwia pozycjonowanie względem kontenera */
-  top: 20px; /* Odstęp od górnej krawędzi */
-  right: 20px; /* Odstęp od prawej krawędzi */
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  position: absolute; 
+  top: 20px; 
+  right: 20px; 
   font-size: calc(0.8rem + 0.5vw);
 }
+.tiles-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+}
+/* Styl ogólny kontenera formularzy */
+.form-container {
+  width: 350px;
+  padding: 50px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Styl nagłówków */
+.form-header {
+  text-align: center;
+}
+
+/* Styl dla przycisków */
+.button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Styl przycisku dodawania trenera */
+.button-add-trainer {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Styl przycisku tworzenia lekcji */
+.button-create-lesson {
+  background-color: #2196F3;
+  color: white;
+}
+
+/* Styl dla selectów */
+.select-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Styl dla kontenerów z tłem */
+.container {
+  display: flex;
+  justify-content: space-around;
+  padding: 80px;
+  background-color: #f9f9f9;
+}
+
+/* Styl dla komunikatów */
+.message {
+  color: red;
+}
+
+.table-container {
+  width: 300px;
+  padding: 130px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table-container h2 {
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+.flex-container {
+  display: flex;
+}
+
+.form-container {
+  flex: 0 0 300px; /* Ustal szerokość formularza na 300px */
+  margin-right: 20px; /* Odstęp po prawej stronie formularza */
+}
+
+.list-container {
+  flex: 1; /* Pozwól, aby lista zajęć zajmowała pozostałą przestrzeń */
+}
+
+.form-header {
+  text-align: center;
+}
+
+.select-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
 
 
 

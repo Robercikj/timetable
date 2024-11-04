@@ -42,7 +42,3 @@ public class SecurityController {
 
 
 
-//@GetMapping
-//  public ResponseEntity <String> hello () {
-// return ResponseEntity.ok("Hello security");
-//}

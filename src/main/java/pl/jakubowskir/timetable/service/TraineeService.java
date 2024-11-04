@@ -3,8 +3,9 @@ package pl.jakubowskir.timetable.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.jakubowskir.timetable.model.Lesson;
 import pl.jakubowskir.timetable.model.Trainee;
-import pl.jakubowskir.timetable.model.TraineeDto;
+import pl.jakubowskir.timetable.dto.TraineeDto;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 
@@ -28,6 +29,7 @@ public class TraineeService {
         return traineeRepository.findAll();
     }
 
+
     public Trainer getTrainerByTraineeId(Long traineeId) {
         Optional<Trainee> optionalTrainee = traineeRepository.findById(traineeId);
         if (optionalTrainee.isPresent()) {
@@ -35,7 +37,23 @@ public class TraineeService {
             return trainee.getTrainer();
         } else {
             throw new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId);
-
         }
+    }
+
+    public List<Lesson> getTrainerAvailableLessons(Long traineeId) {
+        Trainee trainee = traineeRepository.findById(traineeId).orElseThrow(
+                () -> new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId)
+        );
+        Trainer trainer = trainee.getTrainer();
+        if (trainer == null) {
+            throw new IllegalStateException("Trainee doesn't have trainer yet!");
+        }
+        return trainer.getLessons();
+    }
+
+    public List<Lesson> getTraineeLessons(Long traineeId) {
+        return traineeRepository.findById(traineeId).map(Trainee::getLessons).orElseThrow(
+                () -> new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId)
+        );
     }
 }

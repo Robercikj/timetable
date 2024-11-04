@@ -2,9 +2,10 @@ package pl.jakubowskir.timetable.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.jakubowskir.timetable.model.Lesson;
 import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.model.Trainer;
-import pl.jakubowskir.timetable.model.TrainerDto;
+import pl.jakubowskir.timetable.dto.TrainerDto;
 import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
@@ -68,6 +69,10 @@ public class      TrainerService {
         trainee.setTrainer(trainer);
         traineeRepository.save(trainee);
         return trainer;
+    }
+
+    public List<Lesson> getTrainerLessons(Long trainerId) {
+        return trainerRepository.findById(trainerId).map(Trainer::getLessons).orElse(List.of());
     }
 }
 

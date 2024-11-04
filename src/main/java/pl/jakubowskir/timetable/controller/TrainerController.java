@@ -2,9 +2,12 @@ package pl.jakubowskir.timetable.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import pl.jakubowskir.timetable.dto.LessonDto;
+import pl.jakubowskir.timetable.model.Lesson;
 import pl.jakubowskir.timetable.model.Trainer;
-import pl.jakubowskir.timetable.model.TrainerDto;
+import pl.jakubowskir.timetable.dto.TrainerDto;
 import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
+import pl.jakubowskir.timetable.service.LessonService;
 import pl.jakubowskir.timetable.service.TrainerService;
 
 import java.util.List;
@@ -33,5 +36,11 @@ public class TrainerController {
     public Trainer addTraineeToTrainer(@PathVariable Long trainerId, @PathVariable Long traineeId) {
         return trainerService.addTraineeToTrainer(trainerId, traineeId);
     }
+
+    @GetMapping("/{trainerId}/lessons")
+    public List<Lesson> getAllTrainerLessons(@PathVariable Long trainerId) {
+        return trainerService.getTrainerLessons(trainerId);
+    }
+
 }
 

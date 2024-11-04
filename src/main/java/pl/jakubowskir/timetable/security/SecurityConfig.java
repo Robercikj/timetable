@@ -1,6 +1,7 @@
 package pl.jakubowskir.timetable.security;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,9 +26,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pl.jakubowskir.timetable.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
     @Bean
@@ -80,7 +83,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
-                                "/api/v1/timetable/register", "/api/v1/timetable/login", "/h2-console/**")// Pozniej to wlaczymy
+                                patterns())// Pozniej to wlaczymy
                                 .permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
@@ -90,6 +93,15 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
+    }
+
+    private String[] patterns() {
+        String isLocalEnv = System.getenv("LOCAL_TESTING");
+        log.info("Robert chuj {}", isLocalEnv);
+        if (Optional.of(isLocalEnv).filter(Boolean::parseBoolean).isPresent()) {
+            return new String[]{"/api/v1/**", "/h2-console/**"};
+        }
+        return new String[]{"/api/v1/timetable/register", "/api/v1/timetable/login", "/h2-console/**"};
     }
 }
 

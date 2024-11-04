@@ -21,10 +21,8 @@ public class User implements UserDetails {
 
     private Long id;
     @Setter
-    @Getter
     private String username;
     @Setter
-    @Getter
     private String password;
 
     @Override
