@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import pl.jakubowskir.timetable.security.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,13 @@ import java.util.List;
         property = "id")
 public class Trainee {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "trainee_id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "trainee_id", referencedColumnName = "user_id")
+    private User user;
+
     private String name;
     private String surname;
     @ManyToOne

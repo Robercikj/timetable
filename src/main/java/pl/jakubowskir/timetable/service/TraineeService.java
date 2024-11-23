@@ -8,6 +8,11 @@ import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.dto.TraineeDto;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
+import pl.jakubowskir.timetable.repository.TrainerRepository;
+import pl.jakubowskir.timetable.security.Role;
+import pl.jakubowskir.timetable.security.User;
+import pl.jakubowskir.timetable.security.UserDto;
+import pl.jakubowskir.timetable.security.UserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +22,18 @@ import java.util.Optional;
 public class TraineeService {
 
     private TraineeRepository traineeRepository;
+    private UserService userService;
 
     public Trainee addTrainee(TraineeDto trainerDto) {
         Trainee trainee = new Trainee();
         trainee.setName(trainerDto.name());
         trainee.setSurname(trainerDto.surname());
+        // Temporarily add dummy user
+        UserDto userDto = new UserDto();
+        userDto.setUsername(trainerDto.name());
+        userDto.setPassword(trainerDto.name());
+        User user = userService.register(userDto, Role.TRAINEE);
+        trainee.setUser(user);
         return traineeRepository.save(trainee);
     }
 

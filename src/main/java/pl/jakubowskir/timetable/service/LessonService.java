@@ -31,6 +31,7 @@ public class LessonService {
 
     @Transactional
     public Lesson assignTraineeToLesson(Long lessonId, Long traineeId) {
+        log.info("DUPA");
         Trainee trainee = traineeRepository.findById(traineeId).orElseThrow(
                 () -> new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId)
         );

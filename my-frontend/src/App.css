@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  background: url('pływanie.jpg') no-repeat center center fixed;
+  /*background: url('pływanie.jpg') no-repeat center center fixed;*/
   background-size: cover;
   min-height: 100vh;
   display: flex;

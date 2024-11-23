@@ -85,7 +85,7 @@ public class SecurityConfig {
                         auth.requestMatchers(
                                 patterns())// Pozniej to wlaczymy
                                 .permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().hasAuthority(Role.ADMIN.getAuthority()))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -97,8 +97,8 @@ public class SecurityConfig {
 
     private String[] patterns() {
         String isLocalEnv = System.getenv("LOCAL_TESTING");
-        log.info("Robert chuj {}", isLocalEnv);
-        if (Optional.of(isLocalEnv).filter(Boolean::parseBoolean).isPresent()) {
+        log.info("Robert{}", isLocalEnv);
+        if (Optional.ofNullable(isLocalEnv).filter(Boolean::parseBoolean).isPresent()) {
             return new String[]{"/api/v1/**", "/h2-console/**"};
         }
         return new String[]{"/api/v1/timetable/register", "/api/v1/timetable/login", "/h2-console/**"};

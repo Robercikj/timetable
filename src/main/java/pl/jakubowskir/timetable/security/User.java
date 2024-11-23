@@ -13,21 +13,21 @@ import java.util.List;
 @Entity
 @Table(name = "timetable_user")
 @ToString
+@Setter
+@Getter
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
-
+    @Column(name = "user_id")
     private Long id;
-    @Setter
     private String username;
-    @Setter
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(role);
     }
 
     @Override

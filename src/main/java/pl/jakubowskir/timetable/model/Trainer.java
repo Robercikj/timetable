@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.jakubowskir.timetable.security.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,13 @@ import java.util.List;
 public class Trainer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "trainer_id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "trainer_id", referencedColumnName = "user_id")
+    private User user;
+
     private String name;
     private String surname;
     private int phoneNumber;

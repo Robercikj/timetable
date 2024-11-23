@@ -1,5 +1,6 @@
 package pl.jakubowskir.timetable.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.jakubowskir.timetable.model.Lesson;
@@ -9,6 +10,10 @@ import pl.jakubowskir.timetable.dto.TrainerDto;
 import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
+import pl.jakubowskir.timetable.security.Role;
+import pl.jakubowskir.timetable.security.User;
+import pl.jakubowskir.timetable.security.UserDto;
+import pl.jakubowskir.timetable.security.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +21,12 @@ import java.util.Optional;
 
 
 @Service
-public class      TrainerService {
+@AllArgsConstructor(onConstructor_ = {@Autowired})
+public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final TraineeRepository traineeRepository;
+    private final UserService userService; // temporarily, until all trainers will be users
+
     public List<Trainer> getTrainers() {
         return trainerRepository.findAll();
     }
@@ -39,12 +47,6 @@ public class      TrainerService {
                 return assignments;
     }
 
-    @Autowired
-    public TrainerService(TrainerRepository trainerRepository, TraineeRepository traineeRepository) {
-        this.trainerRepository = trainerRepository;
-        this.traineeRepository = traineeRepository;
-    }
-
     public Trainer addTrainer(TrainerDto trainerDto) {
         Trainer trainer = new Trainer();
         trainer.setName(trainerDto.name());
@@ -52,6 +54,12 @@ public class      TrainerService {
         trainer.setPhoneNumber(trainerDto.phoneNumber());
         trainer.setEmail(trainerDto.email());
         trainer.setTraineeList(new ArrayList<>());
+        // Temporarily add dummy user
+        UserDto userDto = new UserDto();
+        userDto.setUsername(trainerDto.name());
+        userDto.setPassword(trainerDto.name());
+        User user = userService.register(userDto, Role.TRAINER);
+        trainer.setUser(user);
         return trainerRepository.save(trainer);
     }
 
