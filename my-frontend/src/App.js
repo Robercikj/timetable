@@ -27,8 +27,8 @@ const App = () => {
     const [message, setMessage] = useState("");
     const [successAddTrainerMessage, setSuccessAddTrainerMessage] = useState("");
     const [errorAddTrainerMessage, setErrorAddTrainerMessage] = useState("");
-    const [successCreateLessonMessage, setSuccessCreateLessonMessage] = useState("");
-    const [errorCreateLessonMessage, setErrorCreateLessonMessage] = useState("");
+    const [successAssigningMessage, setSuccessAssigningMessage] = useState("");
+    const [errorAssigningMessage, setErrorAssigningMessage] = useState("");
     const [successAddTraineeMessage, setSuccessAddTraineeMessage] = useState("");
     const [errorAddTraineeMessage, setErrorAddTraineeMessage] = useState("");
     const [successRegistrationMessage, setSuccessRegistrationMessage] = useState('');
@@ -37,6 +37,16 @@ const App = () => {
     const [messageLesson, setMessageLesson] = useState("");
     const [selectedLessonId, setSelectedLessonId] = useState('');
     const [selectedTraineeId, setSelectedTraineeId] = useState('');
+
+    const navigateToHomePage = (role) => {
+        if (role === 'trainers') {
+            setCurrentPage('trainers');
+        } else if (role === 'trainees') {
+            setCurrentPage('trainnes');
+        } else {
+            setCurrentPage('home');
+        }
+    };
 
 
     const handleLogin = async () => {
@@ -49,55 +59,51 @@ const App = () => {
             }
 
             const response = await axios.post('http://localhost:8080/api/v1/timetable/login', {
-                username: nickname,
-                password: password,
+                username: nickname, password: password,
             });
-
-            const userData = response.data;
-            localStorage.setItem('jwt-token', 'Bearer ' + userData.token);
-            setUser(userData.username);
-            localStorage.setItem('username', userData.username);
-            setSuccessMessage(`Witaj ${userData.username}! Logowanie udane.`);
+            const role = response.data;
+            localStorage.setItem('jwt-token', 'Bearer ' + role.token);
+            setRole(role.username);
+            localStorage.setItem('username', role.username);
+            setSuccessMessage(`Witaj ${role.username}! Logowanie udane.`);
             setErrorMessage('');
-
+            navigateToHomePage(role);
             setIsLoggedIn(true);
 
-            setActiveTab('home');
+            setCurrentPage('home');
             fetchTrainers();
             fetchTrainees();
 
         } catch (error) {
             if (error.response) {
-                setErrorMessage(`Błąd logowania: ${error.response.data.message || 'Spróbuj ponownie.'}`);
+                setErrorMessage(`Błąd logowania: ${error.response.data.message || 'Błędne dane logowania.'}`);
             } else if (error.request) {
                 setErrorMessage('Brak odpowiedzi od serwera.');
             } else {
-                setErrorMessage(`Błąd: ${error.message}`);
+                setErrorMessage(`Błąd: ${error.message || 'Nieznany problem.'}`);
             }
             setSuccessMessage('');
         }
+
 
     };
 
     // Funkcja obsługująca rejestrację
     const handleRegister = async () => {
         try {
-            if (!nickname || !password ||!role) {
+            if (!nickname || !password || !role) {
                 setErrorRegistrationMessage('Nickname i hasło i opjca są wymagane.');
-                setSuccessRegistrationMessage('');
                 return;
             }
 
             const response = await axios.post('http://localhost:8080/api/v1/timetable/register', {
-                username: nickname,
-                password: password,
-                role: role,
+                username: nickname, password: password, role: role,
 
             });
 
             setSuccessRegistrationMessage('Rejestracja udana! Możesz się teraz zalogować.');
-            setErrorRegistrationMessage('');
             localStorage.setItem('userRole', role);
+            navigateToHomePage(role);
 
         } catch (error) {
             if (error.response) {
@@ -124,14 +130,10 @@ const App = () => {
             const token = localStorage.getItem('jwt-token');
             console.log("Token:", token);
             const response = await axios.post('http://localhost:8080/api/v1/trainer/add_trainer', {
-                    name: trainerName,
-                    surname: trainerName
-                },
-                {
-                    headers:
-                        {'Authorization': token}
-                }
-            );
+                name: trainerName, surname: trainerName
+            }, {
+                headers: {'Authorization': token}
+            });
 
             console.log(response)
 
@@ -164,13 +166,10 @@ const App = () => {
             const token = localStorage.getItem('jwt-token');
 
             const response = await axios.post('http://localhost:8080/api/v1/trainee/add_trainees', {
-                    name: traineeName,
-                },
-                {
-                    headers:
-                        {'Authorization': token}
-                }
-            );
+                name: traineeName,
+            }, {
+                headers: {'Authorization': token}
+            });
 
             setSuccessAddTraineeMessage('Podopieczny dodany pomyślnie.');
             setErrorAddTraineeMessage('');
@@ -193,24 +192,20 @@ const App = () => {
     const handleAssignTraineeToTrainer = async () => {
         try {
             if (!selectedTrainer || !selectedTrainee) {
-                setErrorMessage('Wybierz trenera i podopiecznego.');
-                setSuccessMessage('');
+                setErrorAssigningMessage('Wybierz trenera i podopiecznego.');
+                setSuccessAssigningMessage('');
                 return;
             }
 
             console.log('Przypisywanie:', selectedTrainer, selectedTrainee);
             const token = localStorage.getItem('jwt-token');
 
-            const response = await axios.put(`http://localhost:8080/api/v1/trainer/${selectedTrainer}/add_trainee/${selectedTrainee}`,
-                {},
-                {
-                    headers:
-                        {'Authorization': token}
-                }
-            );
+            const response = await axios.put(`http://localhost:8080/api/v1/trainer/${selectedTrainer}/add_trainee/${selectedTrainee}`, {}, {
+                headers: {'Authorization': token}
+            });
 
-            setSuccessMessage('Podopieczny przypisany do trenera pomyślnie.');
-            setErrorMessage('');
+            setSuccessAssigningMessage('Podopieczny przypisany do trenera pomyślnie.');
+            setErrorAssigningMessage('');
             setSelectedTrainer('');
             setSelectedTrainee('');
             fetchTrainees();
@@ -218,13 +213,13 @@ const App = () => {
 
         } catch (error) {
             if (error.response) {
-                setErrorMessage(`Błąd przypisywania podopiecznego do trenera: ${error.response.data.message || 'Spróbuj ponownie.'}`);
+                setErrorAssigningMessage(`Błąd przypisywania podopiecznego do trenera: ${error.response.data.message || 'Spróbuj ponownie.'}`);
             } else if (error.request) {
-                setErrorMessage('Brak odpowiedzi od serwera.');
+                setErrorAssigningMessage('Brak odpowiedzi od serwera.');
             } else {
-                setErrorMessage(`Błąd: ${error.message}`);
+                setErrorAssigningMessage(`Błąd: ${error.message}`);
             }
-            setSuccessMessage('');
+            setSuccessAssigningMessage('');
         }
     };
 
@@ -233,13 +228,9 @@ const App = () => {
         try {
             const token = localStorage.getItem('jwt-token');
 
-            const response = await axios.get(
-                'http://localhost:8080/api/v1/trainer/trainers',
-                {
-                    headers:
-                        {'Authorization': token}
-                }
-            );
+            const response = await axios.get('http://localhost:8080/api/v1/trainer/trainers', {
+                headers: {'Authorization': token}
+            });
             console.log('Trenerzy:', response.data);
             if (response.data) {
                 setTrainers(response.data);
@@ -253,12 +244,9 @@ const App = () => {
     const fetchTrainees = async () => {
         try {
             const token = localStorage.getItem('jwt-token');
-            const response = await axios.get('http://localhost:8080/api/v1/trainee/trainees',
-                {
-                    headers:
-                        {'Authorization': token}
-                }
-            );
+            const response = await axios.get('http://localhost:8080/api/v1/trainee/trainees', {
+                headers: {'Authorization': token}
+            });
             console.log('Podopieczni:', response.data);
             if (response.data) {
                 setTrainees(response.data);
@@ -275,8 +263,7 @@ const App = () => {
         setActiveTab('home');
     }
 
-    const renderHomeTiles = () => (
-        <div className="tile">
+    const renderHomeTiles = () => (<div className="tile">
             <div className="tile" onClick={() => setCurrentPage('home')}>
                 <h3>Strona główna</h3>
             </div>
@@ -286,8 +273,7 @@ const App = () => {
             <div className="tile" onClick={() => setActiveTab('trainees')}>
                 <h3>Podopieczni</h3>
             </div>
-        </div>
-    );
+        </div>);
 
     // Pobierz dane o trenerach i podopiecznych po zalogowaniu
     useEffect(() => {
@@ -298,15 +284,16 @@ const App = () => {
     }, [user]);
 
     useEffect(() => {
-        setUser(localStorage.getItem("username"));
+        const savedRole = localStorage.getItem('userRole');
+        if (savedRole) {
+            navigateToHomePage(savedRole);
+        }
     }, []);
 
-    const renderHomePage = () => (
-        <div>
+    const renderHomePage = () => (<div>
             <h1>Witaj, {user}!</h1>
             <p>To jest strona główna aplikacji. Wybierz opcje z menu.</p>
-        </div>
-    );
+        </div>);
 
 // Definicja funkcji fetchLessons
     const fetchLessons = async () => {
@@ -401,8 +388,7 @@ const App = () => {
 
 
 // Funkcja do renderowania tabeli trenerów i podopiecznych
-    const renderTrainersAndTraineesTable = () => (
-        <div className="table-container">
+    const renderTrainersAndTraineesTable = () => (<div className="table-container">
             <h2>Trenerzy i Podopieczni</h2>
             <table>
                 <thead>
@@ -416,25 +402,20 @@ const App = () => {
                 <tbody>
                 {trainees.map((trainee) => {
                     // Znajdź trenera przypisanego do danego podopiecznego
-                    return (
-                        <tr key={trainee.id}>
+                    return (<tr key={trainee.id}>
                             <td>{trainee.id}</td>
                             <td>{trainee.name}</td>
                             <td>{trainee.trainer ? trainee.trainer.id : 'Brak'}</td>
                             <td>{trainee.trainer ? trainee.trainer.name : 'Brak'}</td>
-                        </tr>
-                    );
+                        </tr>);
                 })}
                 </tbody>
             </table>
-        </div>
-    );
+        </div>);
 
 
-    return (
-        <div className="App">
-            {localStorage.getItem('jwt-token') ? (
-                <div>
+    return (<div className="App">
+            {localStorage.getItem('jwt-token') ? (<div>
                     <div className="tiles-container">
                         <Card className='tile' onClick={() => setCurrentPage('home')}>
                             <CardContent>
@@ -467,8 +448,7 @@ const App = () => {
 
                     {/* Renderowanie treści w zależności od wybranej strony */}
 
-                    {currentPage === 'home' && (
-                        <div className="flex-container">
+                    {currentPage === 'home' && (<div className="flex-container">
                             <div className="form-container">
                                 <h2 className="form-header">Przypisz Podopiecznego do Lekcji</h2>
                                 <form onSubmit={(e) => {
@@ -505,26 +485,23 @@ const App = () => {
                             <div className="list-container">
                                 <h2>Lista Zajęć</h2>
                                 {messageLesson && <p>{messageLesson}</p>}
-                                {lessons.length > 0 ? (
-                                    <ul>
-                                        {lessons.map((lesson) => (
-                                            <li key={lesson.id}>
+                                {lessons.length > 0 ? (<ul>
+                                        {lessons.map((lesson) => (<li key={lesson.id}>
                                                 Trener ID: {lesson.trainerId}, Start: {lesson.startTime},
                                                 Koniec: {lesson.endTime}, Pojemność: {lesson.maxCapacity}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p>Brak zajęć do wyświetlenia.</p>
-                                )}
+                                            </li>))}
+                                    </ul>) : (<p>Brak zajęć do wyświetlenia.</p>)}
                             </div>
-                        </div>
-                    )}
+                        </div>)}
 
 
-                    {currentPage === 'trainers' && (
-                        <div className="container"
-                             style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "20px"}}>
+                    {currentPage === 'trainers' && (<div className="container"
+                                                         style={{
+                                                             display: "flex",
+                                                             flexDirection: "column",
+                                                             alignItems: "center",
+                                                             padding: "20px"
+                                                         }}>
 
                             {/* Formularz dodawania trenera */}
                             <div className="form-container" style={{width: "300px", marginBottom: "20px"}}>
@@ -555,12 +532,10 @@ const App = () => {
                                     Dodaj Trenera
                                 </button>
                                 {successAddTrainerMessage && <p className="message" style={{
-                                    color: "green",
-                                    textAlign: "center"
+                                    color: "green", textAlign: "center"
                                 }}>{successAddTrainerMessage}</p>}
                                 {errorAddTrainerMessage && <p className="message" style={{
-                                    color: "red",
-                                    textAlign: "center"
+                                    color: "red", textAlign: "center"
                                 }}>{errorAddTrainerMessage}</p>}
                             </div>
 
@@ -650,12 +625,10 @@ const App = () => {
                                 </form>
                                 {message && <p className="message">{message}</p>}
                             </div>
-                        </div>
-                    )}
+                        </div>)}
 
 
-                    {currentPage === 'trainees' && (
-                        <div style={{
+                    {currentPage === 'trainees' && (<div style={{
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
@@ -699,12 +672,10 @@ const App = () => {
                                     Dodaj Podopiecznego
                                 </button>
                                 {successAddTraineeMessage && <p className="message" style={{
-                                    color: "green",
-                                    textAlign: "center"
+                                    color: "green", textAlign: "center"
                                 }}>{successAddTraineeMessage}</p>}
                                 {errorAddTraineeMessage && <p className="message" style={{
-                                    color: "red",
-                                    textAlign: "center"
+                                    color: "red", textAlign: "center"
                                 }}>{errorAddTraineeMessage}</p>}
                             </div>
 
@@ -728,11 +699,9 @@ const App = () => {
                                             borderRadius: "4px"
                                         }}>
                                     <option value="">Wybierz trenera</option>
-                                    {trainers.map((trainer) => (
-                                        <option key={trainer.id} value={trainer.id}>
+                                    {trainers.map((trainer) => (<option key={trainer.id} value={trainer.id}>
                                             {trainer.name}
-                                        </option>
-                                    ))}
+                                        </option>))}
                                 </select>
 
                                 <select value={selectedTrainee} onChange={(e) => setSelectedTrainee(e.target.value)}
@@ -744,11 +713,9 @@ const App = () => {
                                             borderRadius: "4px"
                                         }}>
                                     <option value="">Wybierz podopiecznego</option>
-                                    {trainees.map((trainee) => (
-                                        <option key={trainee.id} value={trainee.id}>
+                                    {trainees.map((trainee) => (<option key={trainee.id} value={trainee.id}>
                                             {trainee.name}
-                                        </option>
-                                    ))}
+                                        </option>))}
                                 </select>
 
                                 <button onClick={handleAssignTraineeToTrainer} style={{
@@ -762,20 +729,18 @@ const App = () => {
                                 }}>
                                     Przypisz podopiecznego do trenera
                                 </button>
-                                {successMessage && <p className="message" style={{
-                                    color: "green",
-                                    textAlign: "center"
+                                {successAssigningMessage && <p className="message" style={{
+                                    color: "green", textAlign: "center"
                                 }}>{successMessage}</p>}
-                                {errorMessage && <p className="message"
-                                                    style={{color: "red", textAlign: "center"}}>{errorMessage}</p>}
+                                {errorAssigningMessage && <p className="message"
+                                                             style={{
+                                                                 color: "red", textAlign: "center"
+                                                             }}>{errorAssigningMessage}</p>}
                             </div>
 
                             {/* Wyświetlanie tabeli trenerów i podopiecznych */}
                             <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                marginTop: "20px"
+                                display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px"
                             }}>
                                 <h2 style={{textAlign: "center"}}>Tabela Trenerów i Podopiecznych</h2>
                                 <div style={{overflowX: "auto", width: "100%", maxWidth: "600px"}}>
@@ -783,68 +748,46 @@ const App = () => {
                                         <thead>
                                         <tr>
                                             <th style={{
-                                                border: "1px solid #ccc",
-                                                padding: "8px",
-                                                textAlign: "center"
+                                                border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                             }}>ID Podopiecznego
                                             </th>
                                             <th style={{
-                                                border: "1px solid #ccc",
-                                                padding: "8px",
-                                                textAlign: "center"
+                                                border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                             }}>Nazwa Podopiecznego
                                             </th>
                                             <th style={{
-                                                border: "1px solid #ccc",
-                                                padding: "8px",
-                                                textAlign: "center"
+                                                border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                             }}>ID Trenera
                                             </th>
                                             <th style={{
-                                                border: "1px solid #ccc",
-                                                padding: "8px",
-                                                textAlign: "center"
+                                                border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                             }}>Nazwa Trenera
                                             </th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {trainees.map((trainee) => (
-                                            <tr key={trainee.id}>
+                                        {trainees.map((trainee) => (<tr key={trainee.id}>
                                                 <td style={{
-                                                    border: "1px solid #ccc",
-                                                    padding: "8px",
-                                                    textAlign: "center"
+                                                    border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                                 }}>{trainee.id}</td>
                                                 <td style={{
-                                                    border: "1px solid #ccc",
-                                                    padding: "8px",
-                                                    textAlign: "center"
+                                                    border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                                 }}>{trainee.name}</td>
                                                 <td style={{
-                                                    border: "1px solid #ccc",
-                                                    padding: "8px",
-                                                    textAlign: "center"
+                                                    border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                                 }}>{trainee.trainer ? trainee.trainer.id : 'Brak'}</td>
                                                 <td style={{
-                                                    border: "1px solid #ccc",
-                                                    padding: "8px",
-                                                    textAlign: "center"
+                                                    border: "1px solid #ccc", padding: "8px", textAlign: "center"
                                                 }}>{trainee.trainer ? trainee.trainer.name : 'Brak'}</td>
-                                            </tr>
-                                        ))}
+                                            </tr>))}
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                </div>
-            ) : (
-                // Logowanie/Rejestracja, gdy użytkownik nie jest zalogowany
+                        </div>)}
+                </div>) : (// Logowanie/Rejestracja, gdy użytkownik nie jest zalogowany
                 <div>
-                    {isRegistering ? (
-                        <div>
+                    {isRegistering ? (<div>
                             <h2>Rejestracja</h2>
                             <input
                                 type="text"
@@ -860,17 +803,15 @@ const App = () => {
                             />
                             <select value={role} onChange={(e) => setRole(e.target.value)}>
                                 <option value=" "> Wybierz opcje</option>
-                                <option value="trainer">Trener</option>
-                                <option value="trainee">Podopieczny</option>
+                                <option value="trainers">Trener</option>
+                                <option value="trainees">Podopieczny</option>
 
                             </select>
-                            <button onClick={handleRegister}>Zarejestruj się </button>
+                            <button onClick={handleRegister}>Zarejestruj się</button>
                             <button onClick={() => setIsRegistering(false)}>Masz już konto? Zaloguj się</button>
-                            {errorRegistrationMessage && <p style={{ color: 'red' }}>{errorRegistrationMessage}</p>}
-                            {successRegistrationMessage && <p style={{ color: 'green' }}>{successRegistrationMessage}</p>}
-                        </div>
-                    ) : (
-                        <div>
+                            {errorRegistrationMessage && <p style={{color: 'red'}}>{errorRegistrationMessage}</p>}
+                            {successRegistrationMessage && <p style={{color: 'green'}}>{successRegistrationMessage}</p>}
+                        </div>) : (<div>
                             <h2>Logowanie</h2>
                             <input
                                 type="text"
@@ -886,12 +827,9 @@ const App = () => {
                             />
                             <button onClick={handleLogin}>Zaloguj</button>
                             <button onClick={() => setIsRegistering(true)}>Nie masz konta? Zarejestruj się</button>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
+                        </div>)}
+                </div>)}
+        </div>);
 };
 
 export default App;
