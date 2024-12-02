@@ -1,8 +1,6 @@
 package pl.jakubowskir.timetable.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,26 +15,29 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class Trainer {
 
     @Id
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "trainer_id", referencedColumnName = "user_id")
     private User user;
 
-    private String name;
-    private String surname;
-    private int phoneNumber;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
     private String email;
     @OneToMany(mappedBy = "trainer")
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
     private List<Trainee> traineeList;
     @OneToMany(mappedBy = "trainer")
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
     private List<Lesson> lessons = new ArrayList<>();
 
 }

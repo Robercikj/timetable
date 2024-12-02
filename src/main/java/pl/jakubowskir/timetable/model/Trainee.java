@@ -1,13 +1,10 @@
 package pl.jakubowskir.timetable.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pl.jakubowskir.timetable.security.User;
 
@@ -22,16 +19,19 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
 public class Trainee {
+
     @Id
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "trainee_id", referencedColumnName = "user_id")
     private User user;
 
-    private String name;
-    private String surname;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+    private String email;
     @ManyToOne
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;

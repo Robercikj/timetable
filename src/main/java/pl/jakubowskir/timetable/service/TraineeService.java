@@ -8,14 +8,14 @@ import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.dto.TraineeDto;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
-import pl.jakubowskir.timetable.repository.TrainerRepository;
+import pl.jakubowskir.timetable.security.RegistrationDto;
 import pl.jakubowskir.timetable.security.Role;
 import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.UserDto;
 import pl.jakubowskir.timetable.security.UserService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -25,16 +25,17 @@ public class TraineeService {
     private UserService userService;
 
     public Trainee addTrainee(TraineeDto trainerDto) {
-        Trainee trainee = new Trainee();
-        trainee.setName(trainerDto.name());
-        trainee.setSurname(trainerDto.surname());
-        // Temporarily add dummy user
-        UserDto userDto = new UserDto();
-        userDto.setUsername(trainerDto.name());
-        userDto.setPassword(trainerDto.name());
-        User user = userService.register(userDto, Role.TRAINEE);
-        trainee.setUser(user);
-        return traineeRepository.save(trainee);
+        RegistrationDto registrationDto = new RegistrationDto();
+        registrationDto.setUsername(UUID.randomUUID().toString());
+        registrationDto.setPassword(UUID.randomUUID().toString());
+        registrationDto.setFirstName(trainerDto.firstName());
+        registrationDto.setLastName(trainerDto.lastName());
+        registrationDto.setEmail(trainerDto.email());
+        registrationDto.setPhoneNumber(trainerDto.phoneNumber());
+        registrationDto.setRole(Role.TRAINEE);
+        User user = userService.register(registrationDto);
+        user.setEnabled(false);
+        return null;
     }
 
     public List<Trainee> getTrainee() {

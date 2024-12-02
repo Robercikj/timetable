@@ -1,7 +1,7 @@
 package pl.jakubowskir.timetable.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.jakubowskir.timetable.model.Lesson;
 import pl.jakubowskir.timetable.model.Trainee;
@@ -10,18 +10,19 @@ import pl.jakubowskir.timetable.dto.TrainerDto;
 import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
+import pl.jakubowskir.timetable.security.RegistrationDto;
 import pl.jakubowskir.timetable.security.Role;
 import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.UserDto;
 import pl.jakubowskir.timetable.security.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.UUID;
 
 @Service
-@AllArgsConstructor(onConstructor_ = {@Autowired})
+@AllArgsConstructor
+@Slf4j
 public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final TraineeRepository traineeRepository;
@@ -37,9 +38,9 @@ public class TrainerService {
             for(Trainee trainee : trainer.getTraineeList()){
                 assignments.add(new TrainerTraineeAssignment(
                         trainer.getId(),
-                        trainer.getName(),
+                        trainer.getFirstName(),
                         trainee.getId(),
-                        trainee.getName()
+                        trainee.getFirstName()
 
                 ));
             }
@@ -48,19 +49,17 @@ public class TrainerService {
     }
 
     public Trainer addTrainer(TrainerDto trainerDto) {
-        Trainer trainer = new Trainer();
-        trainer.setName(trainerDto.name());
-        trainer.setSurname(trainerDto.surname());
-        trainer.setPhoneNumber(trainerDto.phoneNumber());
-        trainer.setEmail(trainerDto.email());
-        trainer.setTraineeList(new ArrayList<>());
-        // Temporarily add dummy user
-        UserDto userDto = new UserDto();
-        userDto.setUsername(trainerDto.name());
-        userDto.setPassword(trainerDto.name());
-        User user = userService.register(userDto, Role.TRAINER);
-        trainer.setUser(user);
-        return trainerRepository.save(trainer);
+        RegistrationDto userDto = new RegistrationDto();
+        userDto.setUsername(UUID.randomUUID().toString());
+        userDto.setPassword(UUID.randomUUID().toString());
+        userDto.setFirstName(trainerDto.lastName());
+        userDto.setLastName(trainerDto.lastName());
+        userDto.setPhoneNumber(trainerDto.phoneNumber());
+        userDto.setEmail(trainerDto.email());
+        userDto.setRole(Role.TRAINER);
+        User user = userService.register(userDto);
+        user.setEnabled(false);
+        return null;
     }
 
     public Trainer addTraineeToTrainer(Long trainerId, Long traineeId) {
@@ -81,6 +80,10 @@ public class TrainerService {
 
     public List<Lesson> getTrainerLessons(Long trainerId) {
         return trainerRepository.findById(trainerId).map(Trainer::getLessons).orElse(List.of());
+    }
+
+    public List<Trainee> getTrainees(Long trainerId) {
+        return traineeRepository.findAllByTrainerId(trainerId);
     }
 }
 
