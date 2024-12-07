@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.security;
+package pl.jakubowskir.timetable.dto;
 
 import lombok.Getter;
 import lombok.Setter;

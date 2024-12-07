@@ -10,10 +10,9 @@ import pl.jakubowskir.timetable.dto.TrainerDto;
 import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
-import pl.jakubowskir.timetable.security.RegistrationDto;
-import pl.jakubowskir.timetable.security.Role;
-import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.UserService;
+import pl.jakubowskir.timetable.dto.RegistrationDto;
+import pl.jakubowskir.timetable.model.Role;
+import pl.jakubowskir.timetable.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,28 +25,13 @@ import java.util.UUID;
 public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final TraineeRepository traineeRepository;
-    private final UserService userService; // temporarily, until all trainers will be users
+    private final UserService userService;
 
     public List<Trainer> getTrainers() {
         return trainerRepository.findAll();
     }
 
-    public List<TrainerTraineeAssignment> getAssignments(){
-        List<TrainerTraineeAssignment> assignments = new ArrayList<>();
-        for (Trainer trainer : trainerRepository.findAll()){
-            for(Trainee trainee : trainer.getTraineeList()){
-                assignments.add(new TrainerTraineeAssignment(
-                        trainer.getId(),
-                        trainer.getFirstName(),
-                        trainee.getId(),
-                        trainee.getFirstName()
-
-                ));
-            }
-        }
-                return assignments;
-    }
-
+    // Only for admin
     public Trainer addTrainer(TrainerDto trainerDto) {
         RegistrationDto userDto = new RegistrationDto();
         userDto.setUsername(UUID.randomUUID().toString());
@@ -65,11 +49,11 @@ public class TrainerService {
     public Trainer addTraineeToTrainer(Long trainerId, Long traineeId) {
         Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
         if (optionalTrainer.isEmpty()) {
-            throw new RuntimeException("Nie znaleziono trenera po Id" + trainerId);
+            throw new RuntimeException("Trainer with given id not found: " + trainerId);
         }
         Optional<Trainee> optionalTrainee = traineeRepository.findById(traineeId);
         if(optionalTrainee.isEmpty()) {
-            throw new RuntimeException("Błąd dodawnaia");
+            throw new RuntimeException("Error!");
         }
         Trainer trainer = optionalTrainer.get();
         Trainee trainee = optionalTrainee.get();

@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import pl.jakubowskir.timetable.dto.LessonDto;
-import pl.jakubowskir.timetable.security.RegistrationDto;
-import pl.jakubowskir.timetable.security.Role;
-import pl.jakubowskir.timetable.security.UserService;
+import pl.jakubowskir.timetable.dto.RegistrationDto;
+import pl.jakubowskir.timetable.model.Role;
+import pl.jakubowskir.timetable.service.UserService;
 import pl.jakubowskir.timetable.service.LessonService;
 
 import java.time.LocalDateTime;
@@ -59,7 +59,7 @@ public class StartValues {
         LessonDto lessonDto2 = new LessonDto(
                 LocalDateTime.now().plusHours(3),
                 LocalDateTime.now().plusHours(4),
-                2
+                1
         );
         lessonService.createLesson(3L, lessonDto);
         lessonService.createLesson(3L, lessonDto2);

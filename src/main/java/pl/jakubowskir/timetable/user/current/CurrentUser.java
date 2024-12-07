@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.security.current_user;
+package pl.jakubowskir.timetable.user.current;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

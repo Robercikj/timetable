@@ -1,6 +1,5 @@
 package pl.jakubowskir.timetable.security;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +52,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
+    AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder,
+            UserDetailsService userDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
         authProvider.setUserDetailsService(userDetailsService);
@@ -67,28 +67,28 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**",configuration);
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
-                                                   CorsConfigurationSource corsConfigurationSource,
-                                                   AuthenticationProvider authenticationProvider,
-                                                   JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+            CorsConfigurationSource corsConfigurationSource,
+            AuthenticationProvider authenticationProvider,
+            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
-                                patterns())// Pozniej to wlaczymy
+                                        patterns())
                                 .permitAll()
-                        .anyRequest().authenticated())
+                                .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -99,12 +99,7 @@ public class SecurityConfig {
     }
 
     private String[] patterns() {
-        String isLocalEnv = System.getenv("LOCAL_TESTING");
-        log.info("Robert{}", isLocalEnv);
-        if (Optional.ofNullable(isLocalEnv).filter(Boolean::parseBoolean).isPresent()) {
-            return new String[]{"/api/v1/**", "/h2-console/**"};
-        }
-        return new String[]{"/api/v1/timetable/register", "/api/v1/timetable/login", "/h2-console/**"};
+        return new String[] {"/api/v1/timetable/register", "/api/v1/timetable/login", "/h2-console/**"};
     }
 }
 

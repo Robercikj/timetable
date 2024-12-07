@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { register } from "../../services/api";
 
 const Register = () => {
-    const [role, setRole] = useState("TRAINEE");
+    const [registerRole, setRegisterRole] = useState("TRAINEE");
     const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -15,7 +15,7 @@ const Register = () => {
         e.preventDefault();
         try {
             await register({
-                role,
+                role: registerRole,
                 email,
                 firstName,
                 lastName,
@@ -24,7 +24,7 @@ const Register = () => {
                 password,
             });
             setMessage("Registration successful. Please log in.");
-            setRole("TRAINEE");
+            setRegisterRole("TRAINEE");
             setEmail("");
             setFirstName("");
             setLastName("");
@@ -39,7 +39,7 @@ const Register = () => {
     return (
         <form onSubmit={handleRegister}>
             <h2>Register</h2>
-            <select value={role} onChange={(e) => setRole(e.target.value)} required>
+            <select value={registerRole} onChange={(e) => setRegisterRole(e.target.value)} required>
                 <option value="TRAINEE">Trainee</option>
                 <option value="TRAINER">Trainer</option>
             </select>

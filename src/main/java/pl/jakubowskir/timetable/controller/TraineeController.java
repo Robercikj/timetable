@@ -7,8 +7,8 @@ import pl.jakubowskir.timetable.model.Lesson;
 import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.dto.TraineeDto;
 import pl.jakubowskir.timetable.model.Trainer;
-import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.current_user.CurrentUser;
+import pl.jakubowskir.timetable.model.User;
+import pl.jakubowskir.timetable.user.current.CurrentUser;
 import pl.jakubowskir.timetable.service.TraineeService;
 
 import java.util.List;
@@ -28,6 +28,12 @@ public class TraineeController {
         return traineeService.getTrainee();
     }
 
+    @GetMapping("/without-trainer")
+    @Secured({"ROLE_TRAINER"})
+    public List<Trainee> getTraineesWithoutTrainer() {
+        return traineeService.getTraineeWithoutTrainer();
+    }
+
     // TODO: Wyswietl trenera ktory trenuje podopiecznego o podanym id
     @Secured({"ROLE_TRAINER", "ROLE_ADMIN"})
     @GetMapping("/{trainee_id}/get_trainer")
@@ -42,7 +48,7 @@ public class TraineeController {
     }
 
     @Secured({"ROLE_ADMIN"})
-    @PostMapping("/add_trainees")
+    @PostMapping("/add_trainee")
     public Trainee addTrainee(@RequestBody TraineeDto traineeDto) {
         return traineeService.addTrainee(traineeDto);
     }

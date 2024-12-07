@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { addTrainer } from "../../services/api";
 
-const AddTrainer = () => {
+const AddTrainer = ({ onUpdate }) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("")
@@ -18,6 +18,7 @@ const AddTrainer = () => {
             setLastName("");
             setEmail("")
             setPhoneNumber("")
+            onUpdate();
         } catch (error) {
             setMessage("Error adding trainer.");
         }

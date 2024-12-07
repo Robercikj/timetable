@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createLesson } from "../../services/api";
 
-const AddLesson = () => {
+const AddLesson = ({onUpdate}) => {
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
     const [maxCapacity, setMaxCapacity] = useState("");
@@ -19,6 +19,7 @@ const AddLesson = () => {
             setStartTime("");
             setEndTime("");
             setMaxCapacity("");
+            onUpdate();
         } catch (error) {
             setMessage("Error creating lesson.");
         }

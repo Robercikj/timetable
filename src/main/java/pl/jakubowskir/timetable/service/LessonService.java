@@ -12,12 +12,13 @@ import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.repository.LessonRepository;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
-import pl.jakubowskir.timetable.security.Role;
-import pl.jakubowskir.timetable.security.User;
+import pl.jakubowskir.timetable.model.Role;
+import pl.jakubowskir.timetable.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +35,8 @@ public class LessonService {
 
     public List<Lesson> getUpcomingTrainerLessons(User currentUser) {
         if (Role.TRAINER == currentUser.getRole()) {
-            return lessonRepository.findAllByTrainerIdAndStartTimeAfter(currentUser.getId(), LocalDateTime.now());
+            return lessonRepository.findAllByTrainerIdAndStartTimeAfterAndCanceledFalse(currentUser.getId(),
+                    LocalDateTime.now());
         } else if (Role.TRAINEE == currentUser.getRole()) {
             Trainee trainee = traineeRepository.findById(currentUser.getId()).orElseThrow(
                     () -> new EntityNotFoundException("Trainee with id " + currentUser.getId() + " not found")
@@ -42,7 +44,7 @@ public class LessonService {
             if (trainee.getTrainer() == null) {
                 return List.of();
             }
-            return lessonRepository.findAllByTrainerIdAndStartTimeAfter(trainee.getTrainer().getId(),
+            return lessonRepository.findAllByTrainerIdAndStartTimeAfterAndCanceledFalse(trainee.getTrainer().getId(),
                     LocalDateTime.now());
         }
         return List.of();
@@ -52,7 +54,7 @@ public class LessonService {
         Trainer trainer = trainerRepository.findById(trainerId).orElseThrow(
                 () -> new EntityNotFoundException("Trainee with id " + trainerId + " not found")
         );
-        return trainer.getLessons();
+        return trainer.getLessons().stream().filter(lesson -> !lesson.isCanceled()).toList();
     }
 
     public List<Lesson> getUpcomingTraineeLessons(User currentUser) {
@@ -63,29 +65,41 @@ public class LessonService {
                 () -> new EntityNotFoundException("Trainee with id " + currentUser.getId() + " not found")
         );
         return trainee.getLessons().stream().filter(lesson -> lesson.getStartTime().isAfter(LocalDateTime.now()))
-                .toList();
+                .filter(lesson -> !lesson.isCanceled()).toList();
     }
 
     @Transactional
     public Lesson assignTraineeToLesson(Long lessonId, Long traineeId) {
-        log.info("DUPA");
         Trainee trainee = traineeRepository.findById(traineeId).orElseThrow(
-                () -> new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId)
+                () -> new EntityNotFoundException("Trainee with the given id not found: " + traineeId)
         );
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
-                () -> new EntityNotFoundException("Nie znaleziono lekcji o podanym id " + lessonId)
+                () -> new EntityNotFoundException("Lesson with the given id not found: " + lessonId)
         );
         if (trainee.getLessons().contains(lesson)) {
             return lesson;
         }
         if (lesson.getTrainer() == null || !lesson.getTrainer().equals(trainee.getTrainer())) {
-            throw new RuntimeException("Robert chuj!");
+            throw new RuntimeException("Error!");
         }
-        if (lesson.getTrainees().size() >= lesson.getRemainingCapacity()) {
+        if (lesson.getTrainees().size() > lesson.getRemainingCapacity()) {
             throw new RuntimeException("Max capacity reached!");
         }
         lesson.getTrainees().add(trainee);
         lesson.setRemainingCapacity(lesson.getRemainingCapacity() - 1);
+        return lessonRepository.save(lesson);
+    }
+
+    @Transactional
+    public Lesson unassignTraineeToLesson(Long lessonId, Long traineeId) {
+        Trainee trainee = traineeRepository.findById(traineeId).orElseThrow(
+                () -> new EntityNotFoundException("Trainee with the given id not found: " + traineeId)
+        );
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
+                () -> new EntityNotFoundException("Lesson with the given id not found: " + lessonId)
+        );
+        lesson.getTrainees().remove(trainee);
+        lesson.setRemainingCapacity(lesson.getRemainingCapacity() + 1);
         return lessonRepository.save(lesson);
     }
 
@@ -111,6 +125,18 @@ public class LessonService {
         if (trainer.getLessons().stream().anyMatch(lesson::doesLessonsIntersect)) {
             throw new RuntimeException("Lesson intersect with other trainer lessons");
         }
+        return lessonRepository.save(lesson);
+    }
+
+    @Transactional
+    public Lesson cancelLesson(Long lessonId, Long userId) {
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
+                () -> new EntityNotFoundException("Lesson with id " + lessonId + " not found")
+        );
+        if (!Objects.equals(lesson.getTrainer().getId(), userId)) {
+            throw new RuntimeException("Lesson with id " + lessonId + " not cancelled. Invalid request");
+        }
+        lesson.setCanceled(true);
         return lessonRepository.save(lesson);
     }
 }

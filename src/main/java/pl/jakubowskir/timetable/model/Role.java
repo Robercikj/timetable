@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.security;
+package pl.jakubowskir.timetable.model;
 
 import org.springframework.security.core.GrantedAuthority;
 

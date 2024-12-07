@@ -8,10 +8,9 @@ import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.dto.TraineeDto;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
-import pl.jakubowskir.timetable.security.RegistrationDto;
-import pl.jakubowskir.timetable.security.Role;
-import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.UserService;
+import pl.jakubowskir.timetable.dto.RegistrationDto;
+import pl.jakubowskir.timetable.model.Role;
+import pl.jakubowskir.timetable.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +23,7 @@ public class TraineeService {
     private TraineeRepository traineeRepository;
     private UserService userService;
 
+    // Only for admin
     public Trainee addTrainee(TraineeDto trainerDto) {
         RegistrationDto registrationDto = new RegistrationDto();
         registrationDto.setUsername(UUID.randomUUID().toString());
@@ -42,6 +42,9 @@ public class TraineeService {
         return traineeRepository.findAll();
     }
 
+    public List<Trainee> getTraineeWithoutTrainer() {
+        return traineeRepository.findAllByTrainerId(null);
+    }
 
     public Trainer getTrainerByTraineeId(Long traineeId) {
         Optional<Trainee> optionalTrainee = traineeRepository.findById(traineeId);
@@ -49,13 +52,13 @@ public class TraineeService {
             Trainee trainee = optionalTrainee.get();
             return trainee.getTrainer();
         } else {
-            throw new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId);
+            throw new EntityNotFoundException("Trainee with given id not found: " + traineeId);
         }
     }
 
     public List<Lesson> getTrainerAvailableLessons(Long traineeId) {
         Trainee trainee = traineeRepository.findById(traineeId).orElseThrow(
-                () -> new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId)
+                () -> new EntityNotFoundException("Trainee with given id not found: " + traineeId)
         );
         Trainer trainer = trainee.getTrainer();
         if (trainer == null) {
@@ -66,7 +69,7 @@ public class TraineeService {
 
     public List<Lesson> getTraineeLessons(Long traineeId) {
         return traineeRepository.findById(traineeId).map(Trainee::getLessons).orElseThrow(
-                () -> new EntityNotFoundException("Nie znaleziono podpoiecznego o podanym id " + traineeId)
+                () -> new EntityNotFoundException("Trainee with given id not found: " + traineeId)
         );
     }
 }

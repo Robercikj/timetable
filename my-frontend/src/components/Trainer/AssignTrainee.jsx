@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { fetchTrainees, assignTraineeToSelf } from "../../services/api";
+import { fetchTraineesWithoutTrainer, assignTraineeToSelf } from "../../services/api";
 
 const AssignTrainee = () => {
     const [trainees, setTrainees] = useState([]);
     const [selectedTrainee, setSelectedTrainee] = useState("");
     const [message, setMessage] = useState("");
 
+    const loadTrainees = async () => {
+        const data = await fetchTraineesWithoutTrainer();
+        setTrainees(data);
+    };
+
     useEffect(() => {
-        const loadTrainees = async () => {
-            const data = await fetchTrainees();
-            setTrainees(data);
-        };
         loadTrainees();
     }, []);
 
     const handleAssign = async () => {
         try {
             await assignTraineeToSelf(selectedTrainee);
+            loadTrainees();
             setMessage("Trainee assigned successfully!");
         } catch (error) {
             setMessage("Error assigning trainee.");

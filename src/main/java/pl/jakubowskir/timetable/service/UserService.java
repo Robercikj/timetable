@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.security;
+package pl.jakubowskir.timetable.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,11 +7,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import pl.jakubowskir.timetable.dto.UserDto;
+import pl.jakubowskir.timetable.model.Role;
 import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.model.Trainer;
+import pl.jakubowskir.timetable.model.User;
 import pl.jakubowskir.timetable.repository.TraineeRepository;
 import pl.jakubowskir.timetable.repository.TrainerRepository;
 import pl.jakubowskir.timetable.repository.UserRepository;
+import pl.jakubowskir.timetable.security.JwtService;
+import pl.jakubowskir.timetable.dto.RegistrationDto;
 
 import java.util.Optional;
 
@@ -37,6 +42,7 @@ public class UserService {
         user.setUsername(registrationDto.getUsername());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         user.setRole(registrationDto.getRole());
+        log.info("Registration ongoing");
         if (registrationDto.getRole() == Role.TRAINEE) {
             Trainee trainee = new Trainee();
             trainee.setUser(user);

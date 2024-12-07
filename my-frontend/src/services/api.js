@@ -82,6 +82,33 @@ export const fetchTrainees = async () => {
     }
 };
 
+// Fetch all trainees
+export const fetchTrainerTrainees = async () => {
+    try {
+        const response = await fetch(`${API_URL}/trainer/trainees`, {
+            method: "GET",
+            headers: getHeaders(),
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error("Failed to fetch trainees:", error);
+        throw error;
+    }
+};
+
+export const fetchTraineesWithoutTrainer = async () => {
+    try {
+        const response = await fetch(`${API_URL}/trainee/without-trainer`, {
+            method: "GET",
+            headers: getHeaders(),
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error("Error assigning trainer:", error);
+        throw error;
+    }
+};
+
 // Assign a trainer to the trainee
 export const assignTrainerToCurrentTrainee = async (trainerId) => {
     try {
@@ -256,8 +283,8 @@ export const fetchUpcomingTraineeLessons = async () => {
 // Cancel a lesson
 export const cancelLesson = async (lessonId) => {
     try {
-        const response = await fetch(`${API_URL}/lesson/${lessonId}`, {
-            method: "DELETE",
+        const response = await fetch(`${API_URL}/lesson/${lessonId}/cancel`, {
+            method: "PUT",
             headers: getHeaders(),
         });
         return await handleResponse(response);
@@ -271,6 +298,19 @@ export const cancelLesson = async (lessonId) => {
 export const registerForLesson = async (lessonId) => {
     try {
         const response = await fetch(`${API_URL}/lesson/${lessonId}/enroll`, {
+            method: "PUT",
+            headers: getHeaders(),
+        });
+        return await handleResponse(response);
+    } catch (error) {
+        console.error("Failed to register for lesson:", error);
+        throw error;
+    }
+};
+
+export const optOutFromLesson = async (lessonId) => {
+    try {
+        const response = await fetch(`${API_URL}/lesson/${lessonId}/opt_out`, {
             method: "PUT",
             headers: getHeaders(),
         });

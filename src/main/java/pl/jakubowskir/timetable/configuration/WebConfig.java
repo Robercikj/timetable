@@ -4,7 +4,7 @@ import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import pl.jakubowskir.timetable.security.current_user.CurrentUserArgumentResolver;
+import pl.jakubowskir.timetable.user.current.CurrentUserArgumentResolver;
 
 import java.util.List;
 

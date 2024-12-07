@@ -1,12 +1,13 @@
 package pl.jakubowskir.timetable.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import pl.jakubowskir.timetable.dto.LessonDto;
 import pl.jakubowskir.timetable.model.Lesson;
-import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.current_user.CurrentUser;
+import pl.jakubowskir.timetable.model.User;
+import pl.jakubowskir.timetable.user.current.CurrentUser;
 import pl.jakubowskir.timetable.service.LessonService;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/timetable/lesson")
 @AllArgsConstructor
+@Slf4j
 public class LessonController {
 
     private final LessonService lessonService;
@@ -50,7 +52,19 @@ public class LessonController {
 
     @Secured({"ROLE_TRAINEE"})
     @PutMapping("/{lessonId}/enroll")
-    public Lesson asignTraineeToLesson(@PathVariable Long lessonId, @CurrentUser User currentUser) {
+    public Lesson assignTraineeToLesson(@PathVariable Long lessonId, @CurrentUser User currentUser) {
         return lessonService.assignTraineeToLesson(lessonId, currentUser.getId());
+    }
+
+    @Secured({"ROLE_TRAINEE"})
+    @PutMapping("/{lessonId}/opt_out")
+    public Lesson unassignTraineeToLesson(@PathVariable Long lessonId, @CurrentUser User currentUser) {
+        return lessonService.unassignTraineeToLesson(lessonId, currentUser.getId());
+    }
+
+    @Secured({"ROLE_TRAINER"})
+    @PutMapping("/{lessonId}/cancel")
+    public Lesson cancel(@PathVariable Long lessonId, @CurrentUser User currentUser) {
+        return lessonService.cancelLesson(lessonId, currentUser.getId());
     }
 }

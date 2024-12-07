@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { fetchUpcomingTrainerLessons, fetchUpcomingTraineeLessons, registerForLesson } from "../../services/api"; // Assuming these API functions exist
+import React, {useState, useEffect} from "react";
+import {
+    fetchUpcomingTrainerLessons,
+    fetchUpcomingTraineeLessons,
+    registerForLesson,
+    optOutFromLesson
+} from "../../services/api"; // Assuming these API functions exist
 
 const TraineeLessons = () => {
     const [upcomingLessons, setUpcomingLessons] = useState([]); // Store upcoming lessons for the trainer
@@ -7,24 +12,26 @@ const TraineeLessons = () => {
     const [error, setError] = useState(null); // Store error messages
     const [loading, setLoading] = useState(true); // Loading state
 
+    // Fetch upcoming trainer lessons and enrolled lessons
+    const fetchLessons = async () => {
+        try {
+            const enrolled = await fetchUpcomingTraineeLessons(); // Fetch enrolled lessons
+            const upcoming = await fetchUpcomingTrainerLessons(); // Fetch upcoming lessons
+            const filteredUpcoming = upcoming.filter(
+                (lesson) => !enrolled.some((enrolledLesson) => enrolledLesson.id === lesson.id)
+            );
+            setUpcomingLessons(filteredUpcoming);
+            setEnrolledLessons(enrolled);
+
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching lessons:", error);
+            setError("Failed to fetch lessons.");
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        // Fetch upcoming trainer lessons and enrolled lessons
-        const fetchLessons = async () => {
-            try {
-                const upcoming = await fetchUpcomingTrainerLessons(); // Fetch upcoming lessons
-                const enrolled = await fetchUpcomingTraineeLessons(); // Fetch enrolled lessons
-
-                setUpcomingLessons(upcoming);
-                console.log(upcoming)
-                setEnrolledLessons(enrolled);
-
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching lessons:", error);
-                setError("Failed to fetch lessons.");
-                setLoading(false);
-            }
-        };
 
         fetchLessons();
     }, []);
@@ -38,10 +45,25 @@ const TraineeLessons = () => {
                 await registerForLesson(lessonId);  // Call API to enroll in the lesson
                 alert("Successfully enrolled in the lesson!");  // Show success message
                 // After successful enrollment, fetch the updated list of enrolled lessons
-                const updatedEnrolledLessons = await fetchUpcomingTraineeLessons();
-                setEnrolledLessons(updatedEnrolledLessons); // Update the enrolled lessons list
+                fetchLessons();
             } else {
                 alert("No capacity available to enroll in this lesson.");
+            }
+        } catch (error) {
+            console.error("Error enrolling in lesson:", error);
+            setError("Failed to enroll in the lesson.");
+        }
+    };
+
+    const handleOptOut = async (lessonId) => {
+        try {
+            // Check if there is enough capacity before enrolling
+            const lesson = enrolledLessons.find((lesson) => lesson.id === lessonId);
+            if (lesson) {
+                console.log("Opt out")
+                await optOutFromLesson(lessonId);  // Call API to enroll in the lesson
+                alert("Successfully opt out from the lesson!");  // Show success message
+                fetchLessons();
             }
         } catch (error) {
             console.error("Error enrolling in lesson:", error);
@@ -57,7 +79,7 @@ const TraineeLessons = () => {
     return (
         <div>
             <h2>Upcoming Lessons</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error if any */}
+            {error && <p style={{color: "red"}}>{error}</p>} {/* Display error if any */}
 
             <h3>Your Enrolled Lessons</h3>
             {enrolledLessons.length > 0 ? (
@@ -66,6 +88,7 @@ const TraineeLessons = () => {
                         <li key={lesson.id}>
                             <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
                             <p>Enrolled</p>
+                            <button onClick={() => handleOptOut(lesson.id)}>Opt-out</button>
                         </li>
                     ))}
                 </ul>
@@ -73,17 +96,19 @@ const TraineeLessons = () => {
                 <p>You are not enrolled in any lessons.</p>
             )}
 
-            <h3>Upcoming Lessons</h3>
+            <h3>Your's trainer upcoming lessons you are not enrolled in</h3>
             <ul>
                 {upcomingLessons.length > 0 ? (
                     upcomingLessons.map((lesson) => (
                         <li key={lesson.id}>
                             <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
                             <p>Available Capacity: {lesson.remainingCapacity}</p>
-                            {/* Disable the button if no capacity is available */}
-                            <button onClick={() => handleEnroll(lesson.id)} disabled={lesson.remainingCapacity === 0}>
-                                Enroll
-                            </button>
+                            {/* Conditionally render the enroll button based on capacity */}
+                            {lesson.remainingCapacity > 0 ? (
+                                <button onClick={() => handleEnroll(lesson.id)}>Enroll</button>
+                            ) : (
+                                <p>No capacity available</p>
+                            )}
                         </li>
                     ))
                 ) : (

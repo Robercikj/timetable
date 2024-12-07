@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.security.current_user;
+package pl.jakubowskir.timetable.user.current;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import pl.jakubowskir.timetable.security.User;
+import pl.jakubowskir.timetable.model.User;
 
 @Component
 @AllArgsConstructor
@@ -25,7 +25,6 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        log.error("XDDD");
         return currentUserProvider.getCurrentUser();
     }
 

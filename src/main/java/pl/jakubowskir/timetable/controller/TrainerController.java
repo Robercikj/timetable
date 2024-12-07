@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import pl.jakubowskir.timetable.dto.LessonDto;
 import pl.jakubowskir.timetable.model.Lesson;
 import pl.jakubowskir.timetable.model.Trainee;
 import pl.jakubowskir.timetable.model.Trainer;
 import pl.jakubowskir.timetable.dto.TrainerDto;
-import pl.jakubowskir.timetable.model.TrainerTraineeAssignment;
-import pl.jakubowskir.timetable.security.User;
-import pl.jakubowskir.timetable.security.current_user.CurrentUser;
-import pl.jakubowskir.timetable.service.LessonService;
+import pl.jakubowskir.timetable.model.User;
+import pl.jakubowskir.timetable.user.current.CurrentUser;
 import pl.jakubowskir.timetable.service.TrainerService;
 
 import java.util.List;
@@ -23,12 +20,6 @@ import java.util.List;
 @Slf4j
 public class TrainerController {
     private TrainerService trainerService;
-
-    @Secured({"ROLE_TRAINER", "ROLE_TRAINEE", "ROLE_ADMIN"})
-    @GetMapping("/assignments")
-    public List<TrainerTraineeAssignment> getAssignments() {
-        return trainerService.getAssignments();
-    }
 
     @Secured({"ROLE_TRAINER", "ROLE_TRAINEE", "ROLE_ADMIN"})
     @GetMapping("/all")

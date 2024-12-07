@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    List<Lesson> findAllByTrainerIdAndStartTimeAfter(Long trainerId, LocalDateTime startTime);
+    List<Lesson> findAllByTrainerIdAndStartTimeAfterAndCanceledFalse(Long trainerId, LocalDateTime startTime);
 }

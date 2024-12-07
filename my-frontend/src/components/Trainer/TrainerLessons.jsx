@@ -1,44 +1,44 @@
 import React, { useState, useEffect } from "react";
-import { fetchUpcomingTrainerLessons, registerForLesson } from "../../services/api"; // Assuming these API functions exist
+import {
+    cancelLesson,
+    createLesson,
+    fetchLessons,
+    fetchUpcomingTrainerLessons,
+    registerForLesson
+} from "../../services/api"; // Assuming these API functions exist
 
 const TraineeLessons = () => {
     const [upcomingLessons, setUpcomingLessons] = useState([]); // Store upcoming lessons for the trainer
     const [error, setError] = useState(null); // Store error messages
     const [loading, setLoading] = useState(true); // Loading state
 
+    const fetchLessons = async () => {
+        try {
+            const lessons = await fetchUpcomingTrainerLessons(); // Fetch upcoming lessons
+            setUpcomingLessons(lessons);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching upcoming lessons:", error);
+            setError("Failed to fetch upcoming lessons.");
+            setLoading(false);
+        }
+    };
+
+    const handleCancel = async (lessonId) => {
+        try {
+            await cancelLesson(lessonId);
+            alert("Successfully cancelled the lesson!");  // Show success message
+            fetchLessons();
+        } catch (error) {
+            alert("Error while cancelling the lesson.");
+        }
+    };
+
     useEffect(() => {
         // Fetch upcoming trainer lessons
-        const fetchLessons = async () => {
-            try {
-                const lessons = await fetchUpcomingTrainerLessons(); // Fetch upcoming lessons
-                setUpcomingLessons(lessons);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching upcoming lessons:", error);
-                setError("Failed to fetch upcoming lessons.");
-                setLoading(false);
-            }
-        };
-
         fetchLessons();
     }, []);
 
-    // Handle enrolling in a lesson
-    const handleEnroll = async (lessonId) => {
-        try {
-            // Check if there is enough capacity before enrolling
-            const lesson = upcomingLessons.find((lesson) => lesson.id === lessonId);
-            if (lesson && lesson.remainingCapacity > 0) {
-                await registerForLesson(lessonId);  // Call API to enroll in the lesson
-                alert("Successfully enrolled in the lesson!");  // Show success message
-            } else {
-                alert("No capacity available to enroll in this lesson.");
-            }
-        } catch (error) {
-            console.error("Error enrolling in lesson:", error);
-            setError("Failed to enroll in the lesson.");
-        }
-    };
 
     // Show the trainee lessons content
     if (loading) {
@@ -47,8 +47,8 @@ const TraineeLessons = () => {
 
     return (
         <div>
-            <h2>Upcoming Lessons</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error if any */}
+            <h2>Your Upcoming Lessons</h2>
+            {error && <p style={{color: "red"}}>{error}</p>} {/* Display error if any */}
 
             <ul>
                 {upcomingLessons.length > 0 ? (
@@ -57,12 +57,19 @@ const TraineeLessons = () => {
                             <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
                             <p>Available Capacity: {lesson.remainingCapacity}</p>
 
-                            {/* Conditionally render the enroll button based on capacity */}
-                            {lesson.remainingCapacity > 0 ? (
-                                <button onClick={() => handleEnroll(lesson.id)}>Enroll</button>
+                            <h4>Registered Trainees:</h4>
+                            {lesson.trainees && lesson.trainees.length > 0 ? (
+                                <ul>
+                                    {lesson.trainees.map((trainee) => (
+                                        <li key={trainee.id}>
+                                            {trainee.firstName} {trainee.lastName} ({trainee.email})
+                                        </li>
+                                    ))}
+                                </ul>
                             ) : (
-                                <p>No capacity available</p>
+                                <p>No trainees registered for this lesson.</p>
                             )}
+                            <button onClick={() => handleCancel(lesson.id)}>Cancel</button>
                         </li>
                     ))
                 ) : (

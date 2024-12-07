@@ -1,7 +1,8 @@
-package pl.jakubowskir.timetable.security;
+package pl.jakubowskir.timetable.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import pl.jakubowskir.timetable.model.Role;
 
 @Getter
 @AllArgsConstructor

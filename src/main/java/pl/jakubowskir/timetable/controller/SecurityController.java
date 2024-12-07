@@ -1,4 +1,4 @@
-package pl.jakubowskir.timetable.security;
+package pl.jakubowskir.timetable.controller;
 
 
 import lombok.AllArgsConstructor;
@@ -6,7 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.jakubowskir.timetable.security.current_user.CurrentUserProvider;
+import org.springframework.web.server.ResponseStatusException;
+import pl.jakubowskir.timetable.security.JwtService;
+import pl.jakubowskir.timetable.payload.LoginResponse;
+import pl.jakubowskir.timetable.dto.RegistrationDto;
+import pl.jakubowskir.timetable.model.User;
+import pl.jakubowskir.timetable.dto.UserDto;
+import pl.jakubowskir.timetable.service.UserService;
+import pl.jakubowskir.timetable.user.current.CurrentUserProvider;
 
 @RestController
 @RequestMapping("/api/v1/timetable")
@@ -18,14 +25,13 @@ public class SecurityController {
     private final JwtService jwtService;
     private final CurrentUserProvider currentUserProvider;
 
-    // endpoint rejestracja
     @PostMapping ("/register")
-    public ResponseEntity<String> register(@RequestBody RegistrationDto registrationDto) {
+    public ResponseEntity<Void> register(@RequestBody RegistrationDto registrationDto) {
         if (userService.existsByUsername(registrationDto.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Użytkownik o takim loginie już istnieje");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
         userService.register(registrationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Użytkownik został zarejestrowany");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
@@ -39,10 +45,6 @@ public class SecurityController {
         return ResponseEntity.ok(loginResponse);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<User> getCurrentUser() {
-        return ResponseEntity.ok(currentUserProvider.getCurrentUser());
-    }
 }
 
 

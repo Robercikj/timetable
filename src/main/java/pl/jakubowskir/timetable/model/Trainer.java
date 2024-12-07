@@ -1,12 +1,10 @@
 package pl.jakubowskir.timetable.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.jakubowskir.timetable.security.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +28,10 @@ public class Trainer {
     private String phoneNumber;
     private String email;
     @OneToMany(mappedBy = "trainer")
-    @JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id")
+    @JsonIgnore
     private List<Trainee> traineeList;
     @OneToMany(mappedBy = "trainer")
-    @JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id")
+    @JsonIgnore
     private List<Lesson> lessons = new ArrayList<>();
 
 }

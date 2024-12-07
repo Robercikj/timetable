@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface TraineeRepository extends JpaRepository<Trainee, Long> {
+
     List<Trainee> findAllByTrainerId(Long trainerId);
 }
 

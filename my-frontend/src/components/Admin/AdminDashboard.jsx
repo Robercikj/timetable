@@ -9,25 +9,35 @@ const AdminDashboard = () => {
     const [trainees, setTrainees] = useState([]); // Store all trainees
     const [error, setError] = useState(null); // Store error messages
     const [loading, setLoading] = useState(true); // Loading state
+    const [refreshKey, setRefreshKey] = useState(0); // State to trigger re-renders
 
+    const handleUserAdded = () => {
+        fetchData();
+        setRefreshKey((prevKey) => prevKey + 1); // Increment the key to trigger refresh
+    };
+
+    const fetchData = async () => {
+        try {
+            const trainersData = await fetchTrainers(); // Fetch all trainers
+            const traineesData = await fetchTrainees(); // Fetch all trainees
+            console.log(traineesData)
+            setTrainers(trainersData);
+            setTrainees(traineesData);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setError("Failed to fetch data.");
+            setLoading(false);
+        }
+    };
     // Fetch trainers and trainees when the component mounts
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const trainersData = await fetchTrainers(); // Fetch all trainers
-                const traineesData = await fetchTrainees(); // Fetch all trainees
-                setTrainers(trainersData);
-                setTrainees(traineesData);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                setError("Failed to fetch data.");
-                setLoading(false);
-            }
-        };
-
         fetchData();
     }, []);
+
+    const handleUpdate = () => {
+        fetchData(); // Re-fetch trainers and trainees
+    };
 
     if (loading) {
         return <div>Loading...</div>; // Display loading while fetching data
@@ -36,9 +46,9 @@ const AdminDashboard = () => {
     return (
         <div>
             <h1>Admin Dashboard</h1>
-            <AddTrainer />
-            <AddTrainee />
-            <AssignTraineeToTrainer />
+            <AddTrainer onUpdate={handleUserAdded} />
+            <AddTrainee onUpdate={handleUserAdded} />
+            <AssignTraineeToTrainer onUpdate={handleUpdate} key={refreshKey} />
 
             {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error message if any */}
 
@@ -60,7 +70,8 @@ const AdminDashboard = () => {
                 <ul>
                     {trainees.map((trainee) => (
                         <li key={trainee.id}>
-                            {trainee.firstName} {trainee.lastName} ({trainee.email})
+                            {trainee.firstName} {trainee.lastName} ({trainee.email}).
+                            Trainer: {trainee.trainer ? `${trainee.trainer.firstName} ${trainee.trainer.lastName}` : "None"}`
                         </li>
                     ))}
                 </ul>
