@@ -18,15 +18,19 @@ const TrainerTrainees = () => {
     }, []);
 
     return (
-        <div>
+        <div className="trainer-trainees-container">
             <h2>Your Trainees</h2>
-            <ul>
-                {trainees.map((trainee) => (
-                    <li key={trainee.id}>
-                        {trainee.firstName} {trainee.lastName}
-                    </li>
-                ))}
-            </ul>
+            {trainees.length === 0 ? (
+                <p>No trainees assigned yet.</p>
+            ) : (
+                <ul>
+                    {trainees.map((trainee) => (
+                        <li key={trainee.id}>
+                            {trainee.firstName} {trainee.lastName}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

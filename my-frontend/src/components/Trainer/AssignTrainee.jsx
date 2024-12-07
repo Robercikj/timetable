@@ -26,22 +26,25 @@ const AssignTrainee = () => {
     };
 
     return (
-        <div>
+        <div className="form-container">
             <h2>Assign Trainee</h2>
-            <select
-                value={selectedTrainee}
-                onChange={(e) => setSelectedTrainee(e.target.value)}
-                required
-            >
-                <option value="">Select Trainee</option>
-                {trainees.map((trainee) => (
-                    <option key={trainee.id} value={trainee.id}>
-                        {trainee.firstName} {trainee.lastName}
-                    </option>
-                ))}
-            </select>
-            <button onClick={handleAssign}>Assign</button>
-            {message && <p>{message}</p>}
+            <form className="form" onSubmit={(e) => e.preventDefault()}>
+                <select
+                    value={selectedTrainee}
+                    onChange={(e) => setSelectedTrainee(e.target.value)}
+                    required
+                    className="form-input"
+                >
+                    <option value="">Select Trainee</option>
+                    {trainees.map((trainee) => (
+                        <option key={trainee.id} value={trainee.id}>
+                            {trainee.firstName} {trainee.lastName}
+                        </option>
+                    ))}
+                </select>
+                <button onClick={handleAssign} className="form-button">Assign</button>
+                {message && <p className="form-message">{message}</p>}
+            </form>
         </div>
     );
 };

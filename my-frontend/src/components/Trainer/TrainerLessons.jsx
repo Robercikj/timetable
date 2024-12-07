@@ -46,14 +46,14 @@ const TraineeLessons = () => {
     }
 
     return (
-        <div>
+        <div className="lesson-container">
             <h2>Your Upcoming Lessons</h2>
-            {error && <p style={{color: "red"}}>{error}</p>} {/* Display error if any */}
+            {error && <p className="error-message">{error}</p>} {/* Display error if any */}
 
-            <ul>
+            <div className="lessons-list">
                 {upcomingLessons.length > 0 ? (
                     upcomingLessons.map((lesson) => (
-                        <li key={lesson.id}>
+                        <div key={lesson.id} className="lesson-item">
                             <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
                             <p>Available Capacity: {lesson.remainingCapacity}</p>
 
@@ -70,12 +70,12 @@ const TraineeLessons = () => {
                                 <p>No trainees registered for this lesson.</p>
                             )}
                             <button onClick={() => handleCancel(lesson.id)}>Cancel</button>
-                        </li>
+                        </div>
                     ))
                 ) : (
                     <p>No upcoming lessons available.</p>
                 )}
-            </ul>
+            </div>
         </div>
     );
 };

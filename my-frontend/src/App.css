@@ -1,17 +1,30 @@
 /* General Styles */
+
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ustawienie strony w 100% wysokości ekranu */
+  overflow-x: hidden; /* Zapobiega przewijaniu w poziomie */
+  scroll-behavior: smooth;
 }
 
+
+
+
 .App {
-  text-align: center;
-  min-height: 100vh;
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box; /* Aby padding nie wpływał na szerokość */
 }
 
 /* Header Styles */
@@ -46,36 +59,40 @@ nav button:hover {
 /* Form Styles */
 form {
   background: white;
-  padding: 20px;
+  padding: 200px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  width: 300px;
+  box-shadow: 10px 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px; /* Ograniczenie szerokości formularza */
   text-align: left;
 }
 
 form h2 {
   text-align: center;
   margin-bottom: 20px;
+  color: #333;
 }
 
 form input, form select {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
 form button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
 form button:hover {
@@ -88,7 +105,7 @@ table {
   border-collapse: collapse;
   margin: 20px auto;
   background: white;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 2px 5px rgba(0, 0, 0, 0.1);
   border: 1px solid #ccc;
 }
 
@@ -154,7 +171,7 @@ table button:hover {
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: white;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 2px 5px rgba(0, 0, 0, 0.1);
   min-width: 300px;
   text-align: center;
 }
@@ -189,7 +206,10 @@ p {
 
 form p {
   margin-top: 10px;
+  color: red;
+  font-size: 0.9rem;
   text-align: center;
+
 }
 
 /* Button in Header */
@@ -205,3 +225,114 @@ nav button {
 nav button:hover {
   background-color: darkred;
 }
+/* Container for lessons */
+.lesson-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 10px 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 750px; /* Dostosowana szerokość */
+  margin: 20px auto;
+  text-align: center; /* Wyrównanie tekstu */
+  min-width: 300px; /* Minimalna szerokość, aby kontener był elastyczny */
+}
+
+/* List of lessons */
+.lessons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.lesson-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 10px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading in each lesson */
+.lesson-item h4 {
+  margin-top: 10px;
+  font-size: 1.1rem;
+}
+
+/* Error message */
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Button in Lessons */
+.lesson-item button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.lesson-item button:hover {
+  background-color: #0056b3;
+}
+/* Container for Trainer's Trainees */
+.trainer-trainees-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 10px 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 750px;
+  margin: 20px auto;
+  text-align: center;
+  min-width: 300px;
+}
+
+/* Heading */
+.trainer-trainees-container h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* List Styles */
+.trainer-trainees-container ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trainer-trainees-container li {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  box-shadow: 10px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty state message */
+.trainer-trainees-container p {
+  color: #666;
+  font-size: 1rem;
+}
+
+
+
+
+
+@media (max-width: 600px) {
+  form {
+    padding: 15px;
+    width: 90%;
+  }
+
+  form input, form select, form button {
+    padding: 10px;
+  }
+}
+
