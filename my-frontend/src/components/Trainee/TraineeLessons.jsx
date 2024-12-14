@@ -77,44 +77,46 @@ const TraineeLessons = () => {
     }
 
     return (
-        <div>
-            <h2>Upcoming Lessons</h2>
-            {error && <p style={{color: "red"}}>{error}</p>} {/* Display error if any */}
+        <div className="container">
+            <div className="content">
+                <h2>Upcoming Lessons</h2>
+                {error && <p className="form-message" style={{ color: "red" }}>{error}</p>} {/* Display error if any */}
 
-            <h3>Your Enrolled Lessons</h3>
-            {enrolledLessons.length > 0 ? (
-                <ul>
-                    {enrolledLessons.map((lesson) => (
-                        <li key={lesson.id}>
-                            <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
-                            <p>Enrolled</p>
-                            <button onClick={() => handleOptOut(lesson.id)}>Opt-out</button>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>You are not enrolled in any lessons.</p>
-            )}
-
-            <h3>Your's trainer upcoming lessons you are not enrolled in</h3>
-            <ul>
-                {upcomingLessons.length > 0 ? (
-                    upcomingLessons.map((lesson) => (
-                        <li key={lesson.id}>
-                            <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
-                            <p>Available Capacity: {lesson.remainingCapacity}</p>
-                            {/* Conditionally render the enroll button based on capacity */}
-                            {lesson.remainingCapacity > 0 ? (
-                                <button onClick={() => handleEnroll(lesson.id)}>Enroll</button>
-                            ) : (
-                                <p>No capacity available</p>
-                            )}
-                        </li>
-                    ))
+                <h3>Your lessons</h3>
+                {enrolledLessons.length > 0 ? (
+                    <ul>
+                        {enrolledLessons.map((lesson) => (
+                            <li key={lesson.id}>
+                                <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
+                                <p>Enrolled</p>
+                                <button onClick={() => handleOptOut(lesson.id)} className="form-button">Sign out</button>
+                            </li>
+                        ))}
+                    </ul>
                 ) : (
-                    <p>No upcoming lessons available.</p>
+                    <p>You are not enrolled in any lessons.</p>
                 )}
-            </ul>
+
+                <h3>Avaiable lessons</h3>
+                <ul>
+                    {upcomingLessons.length > 0 ? (
+                        upcomingLessons.map((lesson) => (
+                            <li key={lesson.id}>
+                                <p>{lesson.name} - {lesson.startTime} to {lesson.endTime}</p>
+                                <p>Available Capacity: {lesson.remainingCapacity}</p>
+                                {/* Conditionally render the enroll button based on capacity */}
+                                {lesson.remainingCapacity > 0 ? (
+                                    <button onClick={() => handleEnroll(lesson.id)} className="form-button">Enroll</button>
+                                ) : (
+                                    <p>No capacity available</p>
+                                )}
+                            </li>
+                        ))
+                    ) : (
+                        <p>No upcoming lessons available.</p>
+                    )}
+                </ul>
+            </div>
         </div>
     );
 };

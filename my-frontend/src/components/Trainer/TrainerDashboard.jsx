@@ -14,7 +14,7 @@ const TrainerDashboard = () => {
 
     return (
         <div>
-            <h1>Trainer Dashboard</h1>
+            <h1>Your Calendar</h1>
             <AddLesson onUpdate={handleLessonsAdded} />
             <AssignTrainee />
             <TrainerLessons key={refreshKey} />
