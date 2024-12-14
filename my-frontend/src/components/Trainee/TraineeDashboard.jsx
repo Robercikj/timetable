@@ -5,7 +5,7 @@ import TrainerInfoAndAssignment from "./TrainerInfoAndAssignment";  // Import th
 const TraineeDashboard = () => {
     return (
         <div>
-            <h1>Trainee Dashboard</h1>
+            <h1>Trainee</h1>
             <TrainerInfoAndAssignment />  {/* Display the trainer information and assignment */}
             <TraineeLessons />  {/* Display the trainee lessons */}
         </div>

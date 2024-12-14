@@ -77,8 +77,8 @@ const TraineeLessons = () => {
     }
 
     return (
-        <div className="container">
-            <div className="content">
+        <div className="lesson-container">
+            <div className>
                 <h2>Upcoming Lessons</h2>
                 {error && <p className="form-message" style={{ color: "red" }}>{error}</p>} {/* Display error if any */}
 

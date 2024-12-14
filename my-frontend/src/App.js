@@ -75,10 +75,14 @@ const App = () => {
                             <TraineeDashboard />
                         ) : null
                     ) : (
-                        <div>
-                            <h1>Welcome to the Home Page</h1>
-                            <p>To access the platform, please <Link to="/login">log in</Link> or <Link to="/register">register here</Link>.</p>
+                        <div className="centered-container">
+                            <h1>Welcome to your calendar!</h1>
+                            <p>
+                                To access the platform, please <Link to="/login">log in</Link> or <Link to="/register">register
+                                here</Link>.
+                            </p>
                         </div>
+
                     )}
                 />
             </Routes>

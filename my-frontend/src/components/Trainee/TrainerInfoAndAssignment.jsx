@@ -54,8 +54,8 @@ const TrainerInfoAndAssignment = () => {
     }
 
     return (
-        <div className="container">
-            <div className="content">
+        <div className="lesson-container">
+            <div className>
                 {error && <p className="form-message" style={{ color: "red" }}>{error}</p>} {/* Display error if any */}
 
                 {currentTrainer ? (

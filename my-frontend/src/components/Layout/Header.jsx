@@ -5,6 +5,7 @@ const Header = () => {
     const userRole = localStorage.getItem("role");
 
     return (
+    <body>
         <nav>
             <Link to="/">Home</Link>
             {userRole === "ADMIN" && <Link to="/admin">Admin Dashboard</Link>}
@@ -20,6 +21,7 @@ const Header = () => {
                 <Link to="/login">Login</Link>
             )}
         </nav>
+    </body>
     );
 };
 
